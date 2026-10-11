@@ -325,8 +325,8 @@ export default function UserProfile() {
         )}
 
         {/* BAŞLIK + SIRALAMA + GÖRÜNÜM */}
-        <div className="mb-4 flex items-center justify-between gap-4 flex-wrap">
-          <h2 className="text-body-sm font-bold text-text uppercase tracking-wider font-mono shrink-0">
+        <div className="mb-4 flex flex-col gap-3">
+          <h2 className="text-body-sm font-bold text-text uppercase tracking-wider font-mono">
             {!isSelf
               ? t('profile.section.projects_other')
               : tab === 'projects'
@@ -334,24 +334,20 @@ export default function UserProfile() {
               : t('profile.section.contributions')}
           </h2>
 
-          <div className="flex items-center gap-3 flex-wrap">
-
-            {isSelf && tab === 'projects' && (
-              <Link
-                to="/create-project"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-caption font-medium text-text-muted bg-transparent border border-accent/20 rounded-button hover:border-accent/50 hover:text-text transition-all font-mono"
-              >
-                <Icon.Plus className="w-3.5 h-3.5" />
-                {t('profile.new_project')}
-              </Link>
-            )}
-
-            <ViewToggle
-              view={view}
-              onChange={setView}
-              labelNormal={t('profile.view_normal')}
-              labelCompact={t('profile.view_compact')}
-            />
+          <div className="flex items-center gap-3 flex-wrap min-h-[26px]">
+            <div
+              className={`transition-opacity ${
+                tab === 'projects' ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
+              aria-hidden={tab !== 'projects'}
+            >
+              <ViewToggle
+                view={view}
+                onChange={setView}
+                labelNormal={t('profile.view_normal')}
+                labelCompact={t('profile.view_compact')}
+              />
+            </div>
 
             {tab === 'projects' && (
               <div className="inline-flex rounded-button border border-accent/20 p-0.5 bg-surface/60">
@@ -376,6 +372,20 @@ export default function UserProfile() {
                   {t('profile.sort.popular')}
                 </button>
               </div>
+            )}
+
+            {isSelf && (
+              <Link
+                to="/create-project"
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-caption font-medium text-text-muted bg-transparent border border-accent/20 rounded-button hover:border-accent/50 hover:text-text transition-all font-mono ${
+                  tab === 'projects' ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                }`}
+                aria-hidden={tab !== 'projects'}
+                tabIndex={tab === 'projects' ? 0 : -1}
+              >
+                <Icon.Plus className="w-3.5 h-3.5" />
+                {t('profile.new_project')}
+              </Link>
             )}
           </div>
         </div>

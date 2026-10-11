@@ -342,7 +342,7 @@ export default function CreateProject() {
         navigate(`/project/${data.id}`);
       }, 700);
     } catch {
-      setError(t('errors.server_error'));
+      setError(t('errors.generic'));
       setSubmitting(false);
     }
   };
@@ -643,7 +643,7 @@ export default function CreateProject() {
                 </div>
               ))}
             </div>
-            <ImagePreview url={form.imageUrl} debouncedUrl={debouncedImageUrl} />
+            <ImagePreview debouncedUrl={debouncedImageUrl} />
           </div>
 
           <FormBanner type="error" message={error} />

@@ -7,7 +7,7 @@ import EmptyState from '../../components/ui/EmptyState';
 import { useToast } from '../../components/ui/Toast';
 import CardSkeletonGrid from '../../components/ui/CardSkeletonGrid';
 import TabNav from '../../components/ui/TabNav';
-import { extractErrorMessage } from '../../utils/errors';
+import { extractError } from '../../utils/errors';
 import ViewToggle from '../../components/ui/ViewToggle';
 import ProjectCard from '../../components/project/ProjectCard';
 import PageBreadcrumb from '../../components/ui/PageBreadcrumb';
@@ -135,13 +135,14 @@ export default function Dashboard() {
       );
 
       if (!res.ok) {
-        toast.error(await extractErrorMessage(res, t));
+        const { message } = await extractError(res, t);
+        toast.error(message);
         return;
       }
 
       setRequests((prev) => prev.filter((r) => r.id !== requestId));
     } catch {
-      toast.error(t('errors.server_error'));
+      toast.error(t('errors.generic'));
     } finally {
       setRequestActionId(null);
     }
@@ -304,25 +305,12 @@ export default function Dashboard() {
         </div>
 
         {/* ALT BAŞLIK + TOGGLE + YENİ PROJE */}
-        <div className="mb-4 flex items-center justify-between gap-4 flex-wrap min-h-[32px]">
-          <h2 className="text-body-sm font-bold text-text uppercase tracking-wider font-mono shrink-0">
+        <div className="mb-4 flex flex-col gap-3">
+          <h2 className="text-body-sm font-bold text-text uppercase tracking-wider font-mono">
             {tab === 'projects' ? t('dashboard.tab.projects') : t('dashboard.tab.requests')}
           </h2>
 
-          <div className="flex items-center gap-3 min-h-[26px]">
-
-            <Link
-              to="/create-project"
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-caption font-medium text-text-muted bg-transparent border border-accent/20 rounded-button hover:border-accent/50 hover:text-text transition-all font-mono ${
-                tab === 'projects' ? 'opacity-100' : 'opacity-0 pointer-events-none'
-              }`}
-              aria-hidden={tab !== 'projects'}
-              tabIndex={tab === 'projects' ? 0 : -1}
-            >
-              <Icon.Plus className="w-3.5 h-3.5" />
-              {t('profile.new_project')}
-            </Link>
-
+          <div className="flex items-center gap-3 flex-wrap min-h-[26px]">
             <div
               className={`transition-opacity ${
                 tab === 'projects' ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -336,6 +324,18 @@ export default function Dashboard() {
                 labelCompact={t('dashboard.view_compact')}
               />
             </div>
+
+            <Link
+              to="/create-project"
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-caption font-medium text-text-muted bg-transparent border border-accent/20 rounded-button hover:border-accent/50 hover:text-text transition-all font-mono ${
+                tab === 'projects' ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
+              aria-hidden={tab !== 'projects'}
+              tabIndex={tab === 'projects' ? 0 : -1}
+            >
+              <Icon.Plus className="w-3.5 h-3.5" />
+              {t('profile.new_project')}
+            </Link>
           </div>
         </div>
 

@@ -332,7 +332,7 @@ export default function EditProject() {
         navigate(`/project/${id}`);
       }, 700);
     } catch {
-      setError(t('errors.server_error'));
+      setError(t('errors.generic'));
       setSubmitting(false);
     }
   };
@@ -563,7 +563,7 @@ export default function EditProject() {
                 </div>
               ))}
             </div>
-            <ImagePreview url={form.imageUrl} debouncedUrl={debouncedImageUrl} />
+            <ImagePreview debouncedUrl={debouncedImageUrl} />
           </div>
 
           <FormBanner type="error" message={error} />

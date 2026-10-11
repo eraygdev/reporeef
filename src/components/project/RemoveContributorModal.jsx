@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import * as Icon from '../ui/Icons';
 
 export default function RemoveContributorModal({
@@ -9,6 +11,9 @@ export default function RemoveContributorModal({
   submitting = false,
 }) {
   const { t } = useLanguage();
+  const modalRef = useRef(null);
+
+  useFocusTrap(modalRef, isOpen);
 
   if (!isOpen) return null;
 
@@ -30,6 +35,7 @@ export default function RemoveContributorModal({
       aria-modal="true"
     >
       <div
+        ref={modalRef}
         className="w-full max-w-md bg-surface border border-accent/20 rounded-card shadow-2xl overflow-hidden animate-modal-in"
         onClick={(e) => e.stopPropagation()}
       >

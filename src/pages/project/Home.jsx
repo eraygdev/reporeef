@@ -17,6 +17,7 @@ import { useProjectView } from '../../hooks/useProjectView';
 
 import { API } from '../../utils/api';
 const LIMIT = 20;
+const MOBILE_LIMIT = 2;
 
 export default function Home() {
   
@@ -31,7 +32,7 @@ export default function Home() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const VISIBLE_LIMIT = isMobile ? 4 : limits.visibleCategories;
+  const VISIBLE_LIMIT = isMobile ? MOBILE_LIMIT : limits.visibleCategories;
 
   const [sortMode, setSortMode] = useState(() => {
     try {
@@ -485,17 +486,17 @@ export default function Home() {
       <div id="explore" className="relative z-0 w-full px-4 sm:px-6 lg:px-8 py-section scroll-mt-20">
         <div className="max-w-wide mx-auto">
 
-          <div className="mb-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-            <div>
-              <h2 className="text-h4 font-bold text-text tracking-tight font-mono">
+          <div className="mb-4 lg:mb-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3 lg:gap-4">
+            <div className="min-w-0 lg:flex-1">
+              <h2 className="text-h5 lg:text-h4 font-bold text-text tracking-tight font-mono">
                 {t('home.explore.title')}
               </h2>
-              <p className="text-body-sm text-text-muted mt-1">
+              <p className="hidden sm:block text-mono-sm lg:text-body-sm text-text-muted mt-0.5 lg:mt-1">
                 {t('home.explore.subtitle')}
               </p>
             </div>
 
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2 lg:gap-3 shrink-0">
               <ViewToggle
                 view={view}
                 onChange={setView}

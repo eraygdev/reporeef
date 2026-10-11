@@ -6,7 +6,7 @@ import Avatar from '../../components/ui/Avatar';
 import CharWarning from '../../components/ui/CharWarning';
 import InputClearButton from '../../components/ui/InputClearButton';
 import * as Icon from '../../components/ui/Icons';
-import { extractErrorMessage } from '../../utils/errors';
+import { extractError } from '../../utils/errors';
 import {
   USERNAME_REGEX,
   BIO_REGEX,
@@ -118,7 +118,8 @@ export default function Account() {
       });
 
       if (!res.ok) {
-        setError(await extractErrorMessage(res, t));
+        const { message } = await extractError(res, t);
+        setError(message);
         setSubmitting(false);
         return;
       }

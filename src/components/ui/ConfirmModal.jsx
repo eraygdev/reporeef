@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import * as Icon from '../ui/Icons';
 
 export default function ConfirmModal({
@@ -19,6 +20,9 @@ export default function ConfirmModal({
   const { t } = useLanguage();
   const [remaining, setRemaining] = useState(countdown);
   const [canConfirm, setCanConfirm] = useState(countdown === 0);
+  const modalRef = useRef(null);
+
+  useFocusTrap(modalRef, isOpen);
 
   // Modal açıldığında / kapandığında countdown'ı sıfırla
   useEffect(() => {
@@ -89,6 +93,7 @@ export default function ConfirmModal({
       aria-modal="true"
     >
       <div
+        ref={modalRef}
         className="w-full max-w-md bg-surface border border-accent/20 rounded-card shadow-2xl overflow-hidden animate-modal-in"
         onClick={(e) => e.stopPropagation()}
       >

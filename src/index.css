@@ -350,3 +350,14 @@ body {
   scrollbar-width: thin;
   scrollbar-color: rgba(239, 228, 206, 0.15) var(--color-bg);
 }
+
+/* ─────────────────────────────────────────────────────────
+   SCROLLBAR HIDE — Yatay chip scroll'ları için
+───────────────────────────────────────────────────────── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import Chip from '../ui/Chip';
 import * as Icon from '../ui/Icons';
 
@@ -23,6 +24,9 @@ export default function CategoryPick({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const abortRef = useRef(null);
+  const modalRef = useRef(null);
+
+  useFocusTrap(modalRef, isOpen);
 
   useEffect(() => {
     if (isOpen) {
@@ -127,6 +131,7 @@ export default function CategoryPick({
       aria-modal="true"
     >
       <div
+        ref={modalRef}
         className="w-full max-w-lg bg-surface border border-accent/20 rounded-card shadow-2xl overflow-hidden flex flex-col max-h-[80vh] animate-modal-in"
         onClick={(e) => e.stopPropagation()}
       >

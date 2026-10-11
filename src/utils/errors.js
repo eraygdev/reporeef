@@ -18,18 +18,8 @@ export function getErrorMessage(errorCode, t) {
   return msg === key ? t("errors.generic") : msg;
 }
 
-// extractErrorMessage — res objesinden error code çıkarır.
-// Response 4xx/5xx ise JSON'dan error alır, yoksa generic.
-export async function extractErrorMessage(res, t) {
-  try {
-    const data = await res.json();
-    return getErrorMessage(data?.error, t);
-  } catch {
-    return t("errors.generic");
-  }
-}
-
 // Backend response'undan hem error code hem mesaj döner.
+// Kullanım: const { code, message } = await extractError(res, t);
 export async function extractError(res, t) {
   try {
     const data = await res.json();

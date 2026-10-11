@@ -5,7 +5,7 @@ import { useLanguage } from '../../i18n/LanguageContext';
 import LoadingScreen from '../../components/ui/LoadingScreen';
 import NotFoundScreen from '../../components/ui/NotFoundScreen';
 import { useToast } from '../../components/ui/Toast';
-import { extractErrorMessage } from '../../utils/errors';
+import { extractError } from '../../utils/errors';
 import { formatCount } from '../../utils/format';
 import PageBreadcrumb from '../../components/ui/PageBreadcrumb';
 import JoinRequestModal from '../../components/project/JoinRequestModal';
@@ -156,7 +156,8 @@ export default function ProjectDetail() {
       });
 
       if (!res.ok) {
-        toast.error(await extractErrorMessage(res, t));
+        const { message } = await extractError(res, t);
+        toast.error(message);
         setDeleting(false);
         return;
       }
@@ -170,7 +171,7 @@ export default function ProjectDetail() {
       setIsDeleteModalOpen(false);
       navigate('/');
     } catch {
-      toast.error(t('errors.server_error'));
+      toast.error(t('errors.generic'));
       setDeleting(false);
     }
   };
@@ -190,7 +191,8 @@ export default function ProjectDetail() {
       });
 
       if (!res.ok) {
-        toast.error(await extractErrorMessage(res, t));
+        const { message } = await extractError(res, t);
+        toast.error(message);
         setJoinSubmitting(false);
         return;
       }
@@ -199,7 +201,7 @@ export default function ProjectDetail() {
       setIsJoinModalOpen(false);
       setJoinSubmitting(false);
     } catch {
-      toast.error(t('errors.server_error'));
+      toast.error(t('errors.generic'));
       setJoinSubmitting(false);
     }
   };
@@ -221,7 +223,8 @@ export default function ProjectDetail() {
       });
 
       if (!res.ok) {
-        toast.error(await extractErrorMessage(res, t));
+        const { message } = await extractError(res, t);
+        toast.error(message);
         setLeaveSubmitting(false);
         setIsLeaveModalOpen(false);
         return;
@@ -237,7 +240,7 @@ export default function ProjectDetail() {
       setIsLeaveModalOpen(false);
       setLeaveSubmitting(false);
     } catch {
-      toast.error(t('errors.server_error'));
+      toast.error(t('errors.generic'));
       setLeaveSubmitting(false);
       setIsLeaveModalOpen(false);
     }
@@ -270,7 +273,8 @@ export default function ProjectDetail() {
       );
 
       if (!res.ok) {
-        toast.error(await extractErrorMessage(res, t));
+        const { message } = await extractError(res, t);
+        toast.error(message);
         setRemoveSubmitting(false);
         return;
       }
@@ -286,7 +290,7 @@ export default function ProjectDetail() {
       setRemoveTarget(null);
       setRemoveSubmitting(false);
     } catch {
-      toast.error(t('errors.server_error'));
+      toast.error(t('errors.generic'));
       setRemoveSubmitting(false);
     }
   };
