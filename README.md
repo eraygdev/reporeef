@@ -59,6 +59,11 @@ developers one place to:
 
 - **GitHub OAuth** authentication (no passwords stored)
 - JWT-based sessions (7-day expiry, no email in the token for privacy)
+- **Onboarding flow** — new users pick a username before entering the app; the system assigns a temporary `user_{github_id}` to guarantee no collisions
+- **Reserved username protection** — `admin`, `api`, `root`, `user_*` prefix, and 30+ system names are blocked
+- **Username format validation** — must start and end with a letter/number; `..`, `__`, `--` are rejected
+- **Case-insensitive uniqueness** — `Eray` and `eray` cannot coexist (`LOWER(username)` index)
+- **Username change cooldown** — once changed, a 48-hour cooldown applies (bio edits are unaffected)
 - Public user profiles with project and contributor stats
 - Editable username and bio
 
@@ -71,6 +76,7 @@ developers one place to:
 - Up to 10 projects per user
 - Edit or delete your own projects
 - Cover image preview before publishing
+- **Draft persistence** — the create form auto-saves to `localStorage`; canceled drafts are cleared
 
 ### Collaboration
 
@@ -86,6 +92,7 @@ developers one place to:
 - Internationalization: **English / Turkish**
 - Adjustable text scale (small / medium / large)
 - **Field-level error feedback** — invalid inputs scroll into view, flash red, and show inline hints
+- **Form submission guard** — buttons disable when nothing changed, submissions are throttled to prevent spam
 - Toast notifications, no native `alert()` or `confirm()`
 - Design token system — consistent typography, spacing, radius
 
@@ -97,6 +104,7 @@ developers one place to:
 - **React Router v7**
 - **Tailwind CSS v4** with a custom design token system
 - Context-based state (Auth, Config, Language, Toast)
+- Custom hooks: `useFocusTrap`, `useFormGuard`, `useDebounced`, `useProjectView`, `useScale`, `useSearchHistory`, `useClickOutside`
 - Deployed on **Vercel** — [reporeef.com](https://reporeef.com)
 
 ### Backend ([separate repo](https://github.com/eraygdev/reporeef-api))
@@ -110,6 +118,8 @@ developers one place to:
 - GitHub repo visibility check via `git-upload-pack` (no API rate limit)
 - Cover image validation: format, source, and size (2 MB)
 - Multi-stage **Docker** build (alpine, non-root, healthcheck)
+- **Test suite** — table-driven tests for all pure functions (validation, sanitization, profanity filter)
+- **GitHub Actions CI** — build, vet, test, lint on every push
 
 ### Planned
 
@@ -176,10 +186,10 @@ src/
 │   ├── project/       # ProjectCard, JoinRequestModal, ContributorCard, ...
 │   └── ui/            # Icons, Toast, ConfirmModal, FieldError, ...
 ├── context/           # AuthContext, ConfigContext
-├── hooks/             # useDebounced, useScale, useSearchHistory, useProjectView
+├── hooks/             # useDebounced, useScale, useSearchHistory, useProjectView, useFocusTrap, useFormGuard
 ├── i18n/              # LanguageContext + en.js / tr.js translations
 ├── pages/
-│   ├── auth/          # Login, Register, Callback
+│   ├── auth/          # Login, Register, Callback, Onboarding
 │   ├── legal/         # About, Privacy, Terms, Cookies
 │   ├── project/       # Home, Create, Edit, Details
 │   ├── settings/      # Account, Appearance, Notifications, Danger
@@ -193,11 +203,33 @@ src/
 
 - **`project_contributors`** is the single source of truth for contributors — no denormalized `contributors` column on the projects table.
 - **`max_contributors`** is chosen at project creation and **cannot be changed afterward** (intentional — prevents bait-and-switch on contributor expectations).
-- **JWT contains no email** — privacy-first design. Only `user_id`, `username`, and `is_premium`.
-- **Error handling**: backend returns stable error codes (e.g. `username_taken`), the frontend translates them via `extractErrorMessage(res, t)` — no raw server messages ever reach the user. Field-specific errors are mapped to their input and shown inline with auto-scroll.
+- **JWT contains no email** — privacy-first design. Claims: `user_id`, `is_premium`, `onboarded`. Username is intentionally **not** in the token — the middleware stays stateless and handlers always read the live value from the DB.
+- **Onboarding is a gate, not a suggestion.** `authMiddleware` reads `onboarded` from the JWT; `requireOnboarded` blocks write endpoints (create/update/delete project, star, join/leave) with `403 onboarding_required` until the user picks a real username.
+- **GitHub OAuth callback uses `ON CONFLICT (github_id)`** — never email — to survive GitHub email changes without losing account links. `github_username` is re-synced on every login.
+- **Error handling**: backend returns stable error codes (e.g. `username_taken`), the frontend translates them via `extractError(res, t)` — no raw server messages ever reach the user. Field-specific errors are mapped to their input and shown inline with auto-scroll.
 - **Cover images are GitHub-only**: URLs are normalized to `raw.githubusercontent.com`, format-checked (no SVG — XSS risk), and size-checked (2 MB max). Backend uses a HEAD request with a 5-second timeout.
 - **Repo visibility** is checked via `git-upload-pack` (returns 200 for public, 401/404 otherwise) — no GitHub API rate limit involved.
+- **Validation lives in pure functions.** Handlers only orchestrate: `parse → validate → DB → respond`. This keeps business rules testable without a database or HTTP server.
 - **Design system** is locked: dark-only, four-color palette, three fonts (Carter One for logo, Inter for body, JetBrains Mono for metrics). No emojis — all icons are custom SVGs.
+
+## Testing
+
+The backend ships with a table-driven test suite covering every pure function:
+
+```bash
+cd ../reporeef-api
+go test ./internal/... -race -coverprofile=coverage.out
+go tool cover -func=coverage.out
+```
+
+**Covered (100%):**
+
+- `internal/profanity` — `Contains`, `normalize` (Turkish + English + leet-speak + word boundaries)
+- `validation.go` — `validateText`, `validateTextMinMax`, `validateProfileInput`, `validateSearchQuery`, `validateUsernameParam`, `validateProjectInput`, `escapeLikePattern`, `canChangeUsername`, GitHub URL normalizers, username format check
+- `sanitize.go` — `sanitizeText`, `nullableString`
+- `constants.go` — `isAllowedContributorLimit`
+
+Handlers (DB + HTTP) are intentionally not covered yet — the priority was locking down the business rules first.
 
 ## Roadmap
 
@@ -205,6 +237,10 @@ src/
 
 - [x] Frontend foundation (Home, Project Detail, Navbar, Sidebar, Footer, 404)
 - [x] GitHub OAuth + JWT authentication
+- [x] Onboarding flow (temp username → user picks real one)
+- [x] Reserved username + format validation
+- [x] Case-insensitive username uniqueness
+- [x] Username change cooldown (48 hours)
 - [x] Project creation, editing, deletion
 - [x] Contributor join / approve / reject / remove flow
 - [x] User dashboard (projects + incoming requests)
@@ -219,6 +255,8 @@ src/
 - [x] GitHub-only cover images + repo public check + size limit
 - [x] Field-level validation errors (auto-scroll + inline hints)
 - [x] Rate limiting, security headers, XSS sanitization
+- [x] Table-driven test suite for all pure functions
+- [x] Form submission guard (disable-when-clean + throttle)
 
 ### In Progress
 
@@ -235,6 +273,8 @@ src/
 - [ ] User following
 - [ ] Theme switcher (light mode)
 - [ ] Full-text search with `pg_trgm`
+- [ ] Structured logging (`slog`)
+- [ ] Handler / integration tests (DB + httptest)
 - [ ] 2FA
 
 ## Contributing
@@ -280,6 +320,11 @@ Dağınık GitHub repoları veya Discord sunucuları arasında gezinmek yerine R
 ### Öne Çıkan Özellikler
 
 - **GitHub OAuth** ile giriş (şifre saklanmaz)
+- **Onboarding akışı** — yeni kullanıcılar uygulamaya girmeden önce kullanıcı adını seçer; sistem çakışma olmaması için geçici olarak `user_{github_id}` atar
+- **Rezerve kullanıcı adı koruması** — `admin`, `api`, `root`, `user_*` prefix'i ve 30+ sistem ismi engellenir
+- **Kullanıcı adı format kontrolü** — harf/rakam ile başlar ve biter; `..`, `__`, `--` reddedilir
+- **Büyük/küçük harf duyarsız tekillik** — `Eray` ve `eray` aynı anda var olamaz
+- **Kullanıcı adı değiştirme bekleme süresi** — bir kez değiştirildikten sonra 48 saat bekleme uygulanır (bio değişikliğini etkilemez)
 - Proje oluşturma, düzenleme ve silme
 - **GitHub-only kapak görseli** — `raw.githubusercontent.com` üzerinden, en fazla 2 MB
 - **Repo public kontrolü** — proje kaydedilmeden önce GitHub reposunun herkese açık olduğu doğrulanır
@@ -290,6 +335,8 @@ Dağınık GitHub repoları veya Discord sunucuları arasında gezinmek yerine R
 - Çift dil desteği (İngilizce / Türkçe)
 - Ayarlanabilir yazı boyutu
 - **Alan bazlı hata geri bildirimi** — hatalı input otomatik olarak ekrana gelir, kırmızı flash alır ve altında açıklama gösterir
+- **Form gönderim koruması** — değişiklik yokken buton pasif, spam gönderimler throttle ile engellenir
+- **Taslak kalıcılığı** — create formu `localStorage`'a otomatik kaydeder; iptal edilen taslaklar temizlenir
 - Dark tema, minimal ve tutarlı tasarım sistemi
 
 ### Teknoloji Yığını
@@ -307,6 +354,18 @@ Dağınık GitHub repoları veya Discord sunucuları arasında gezinmek yerine R
 - pgx/v5 + Neon PostgreSQL
 - GitHub OAuth + JWT
 - Docker (multi-stage, non-root)
+- Tablo bazlı test paketi (saf fonksiyonlar için %100 kapsam)
+- GitHub Actions CI — her push'ta build, vet, test, lint
+
+### Test
+
+```bash
+cd ../reporeef-api
+go test ./internal/... -race -coverprofile=coverage.out
+go tool cover -func=coverage.out
+```
+
+Tüm **saf fonksiyonlar** %100 kapsanır — validasyon, sanitizasyon, küfür filtresi, GitHub URL normalizasyonu, kullanıcı adı kuralları ve bekleme süresi kontrolü. Handler'lar (DB + HTTP) bilinçli olarak henüz kapsanmamış — öncelik iş kurallarını kilitlemekti.
 
 ### Kurulum
 
