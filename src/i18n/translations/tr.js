@@ -233,8 +233,10 @@ export const tr = {
     },
     request: {
       wants_to_join: "şu projeye katılmak istiyor:",
-      reject: "reddet",
       approve: "onayla",
+      reject: "reddet",
+      approved: "Başvuru onaylandı",
+      rejected: "Başvuru reddedildi",
     },
   },
 
@@ -321,6 +323,7 @@ export const tr = {
         generic: "Bir hata oluştu",
         network: "Sunucuya bağlanılamadı",
       },
+      username_cooldown_hint: "Kullanıcı adı 48 saatte bir değiştirilebilir.",
     },
 
     // Appearance sayfası
@@ -421,6 +424,12 @@ export const tr = {
     },
   },
 
+  project_status: {
+    online: "Yayında",
+    offline: "Çevrimdışı",
+    archived: "Arşivlendi",
+  },
+
   // ─── DETAILS ───
   details: {
     loading: "Proje yükleniyor...",
@@ -433,6 +442,7 @@ export const tr = {
     delete: "sil",
     delete_confirm:
       "Bu projeyi silmek istediğine emin misin? Bu işlem geri alınamaz.",
+    delete_success: "Proje silindi",
     delete_failed: "Silme başarısız oldu",
     section: {
       links: "/bağlantılar",
@@ -703,6 +713,8 @@ export const tr = {
 
     // yetki
     forbidden: "Bu işlem için yetkin yok",
+    username_change_too_frequent:
+      "Kullanıcı adını 48 saatte bir değiştirebilirsin. Lütfen daha sonra tekrar dene.",
 
     // profanity
     title_profanity: "Başlık uygunsuz ifade içeriyor",

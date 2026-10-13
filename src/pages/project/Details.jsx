@@ -1,21 +1,21 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { useLanguage } from '../../i18n/LanguageContext';
-import LoadingScreen from '../../components/ui/LoadingScreen';
-import NotFoundScreen from '../../components/ui/NotFoundScreen';
-import { useToast } from '../../components/ui/Toast';
-import { extractError } from '../../utils/errors';
-import { formatCount } from '../../utils/format';
-import PageBreadcrumb from '../../components/ui/PageBreadcrumb';
-import JoinRequestModal from '../../components/project/JoinRequestModal';
-import ContributorCard from '../../components/project/ContributorCard';
-import LeaveConfirmModal from '../../components/project/LeaveConfirmModal';
-import RemoveContributorModal from '../../components/project/RemoveContributorModal';
-import ConfirmModal from '../../components/ui/ConfirmModal';
-import * as Icon from '../../components/ui/Icons';
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../i18n/LanguageContext";
+import LoadingScreen from "../../components/ui/LoadingScreen";
+import NotFoundScreen from "../../components/ui/NotFoundScreen";
+import { useToast } from "../../components/ui/Toast";
+import { extractError } from "../../utils/errors";
+import { formatCount } from "../../utils/format";
+import PageBreadcrumb from "../../components/ui/PageBreadcrumb";
+import JoinRequestModal from "../../components/project/JoinRequestModal";
+import ContributorCard from "../../components/project/ContributorCard";
+import LeaveConfirmModal from "../../components/project/LeaveConfirmModal";
+import RemoveContributorModal from "../../components/project/RemoveContributorModal";
+import ConfirmModal from "../../components/ui/ConfirmModal";
+import * as Icon from "../../components/ui/Icons";
 
-import { API } from '../../utils/api';
+import { API } from "../../utils/api";
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -26,13 +26,13 @@ export default function ProjectDetail() {
 
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [starLoading, setStarLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const [joinStatus, setJoinStatus] = useState('none');
+  const [joinStatus, setJoinStatus] = useState("none");
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [joinSubmitting, setJoinSubmitting] = useState(false);
 
@@ -43,19 +43,19 @@ export default function ProjectDetail() {
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [removeSubmitting, setRemoveSubmitting] = useState(false);
 
-  const locale = lang === 'tr' ? 'tr-TR' : 'en-US';
+  const locale = lang === "tr" ? "tr-TR" : "en-US";
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    setError('');
-    const token = localStorage.getItem('token');
+    setError("");
+    const token = localStorage.getItem("token");
 
     fetch(`${API}/projects/${id}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     })
       .then((res) => {
-        if (!res.ok) throw new Error('not_found');
+        if (!res.ok) throw new Error("not_found");
         return res.json();
       })
       .then((data) => {
@@ -76,11 +76,11 @@ export default function ProjectDetail() {
 
   useEffect(() => {
     if (!user) {
-      setJoinStatus('none');
+      setJoinStatus("none");
       return;
     }
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     let cancelled = false;
 
     fetch(`${API}/projects/${id}/my-join-status`, {
@@ -89,11 +89,11 @@ export default function ProjectDetail() {
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (cancelled || !data) return;
-        setJoinStatus(data.status || 'none');
+        setJoinStatus(data.status || "none");
       })
       .catch(() => {
         if (cancelled) return;
-        setJoinStatus('none');
+        setJoinStatus("none");
       });
 
     return () => {
@@ -103,13 +103,13 @@ export default function ProjectDetail() {
 
   const handleToggleStar = async () => {
     if (!user) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
     if (starLoading) return;
 
-    const token = localStorage.getItem('token');
-    const method = project.starred ? 'DELETE' : 'POST';
+    const token = localStorage.getItem("token");
+    const method = project.starred ? "DELETE" : "POST";
 
     setStarLoading(true);
     try {
@@ -117,7 +117,7 @@ export default function ProjectDetail() {
         method,
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error('action_failed');
+      if (!res.ok) throw new Error("action_failed");
       const data = await res.json();
       setProject((prev) => ({
         ...prev,
@@ -147,11 +147,11 @@ export default function ProjectDetail() {
     if (deleting) return;
 
     setDeleting(true);
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     try {
       const res = await fetch(`${API}/projects/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -169,22 +169,23 @@ export default function ProjectDetail() {
       }
 
       setIsDeleteModalOpen(false);
-      navigate('/');
+      toast.success(t("details.delete_success"));
+      navigate("/");
     } catch {
-      toast.error(t('errors.generic'));
+      toast.error(t("errors.generic"));
       setDeleting(false);
     }
   };
 
   const handleJoinSubmit = async (message) => {
     setJoinSubmitting(true);
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     try {
       const res = await fetch(`${API}/projects/${id}/join`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ message }),
@@ -197,11 +198,11 @@ export default function ProjectDetail() {
         return;
       }
 
-      setJoinStatus('pending');
+      setJoinStatus("pending");
       setIsJoinModalOpen(false);
       setJoinSubmitting(false);
     } catch {
-      toast.error(t('errors.generic'));
+      toast.error(t("errors.generic"));
       setJoinSubmitting(false);
     }
   };
@@ -214,11 +215,11 @@ export default function ProjectDetail() {
     }
 
     setLeaveSubmitting(true);
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     try {
       const res = await fetch(`${API}/projects/${id}/leave`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -230,17 +231,17 @@ export default function ProjectDetail() {
         return;
       }
 
-      setJoinStatus('none');
+      setJoinStatus("none");
       setProject((prev) => ({
         ...prev,
         contributorsList: (prev.contributorsList || []).filter(
-          (c) => c.user_id !== user.user_id
+          (c) => c.user_id !== user.user_id,
         ),
       }));
       setIsLeaveModalOpen(false);
       setLeaveSubmitting(false);
     } catch {
-      toast.error(t('errors.generic'));
+      toast.error(t("errors.generic"));
       setLeaveSubmitting(false);
       setIsLeaveModalOpen(false);
     }
@@ -261,15 +262,15 @@ export default function ProjectDetail() {
     if (!removeTarget || removeSubmitting) return;
 
     setRemoveSubmitting(true);
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     try {
       const res = await fetch(
         `${API}/projects/${id}/contributors/${removeTarget.user_id}`,
         {
-          method: 'DELETE',
+          method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -282,7 +283,7 @@ export default function ProjectDetail() {
       setProject((prev) => ({
         ...prev,
         contributorsList: (prev.contributorsList || []).filter(
-          (c) => c.user_id !== removeTarget.user_id
+          (c) => c.user_id !== removeTarget.user_id,
         ),
       }));
 
@@ -290,7 +291,7 @@ export default function ProjectDetail() {
       setRemoveTarget(null);
       setRemoveSubmitting(false);
     } catch {
-      toast.error(t('errors.generic'));
+      toast.error(t("errors.generic"));
       setRemoveSubmitting(false);
     }
   };
@@ -299,19 +300,19 @@ export default function ProjectDetail() {
     try {
       await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
-      toast.success(t('common.copied'));
+      toast.success(t("common.copied"));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error(t('details.share.copy_failed'));
+      toast.error(t("details.share.copy_failed"));
     }
   };
 
   const formatDate = (iso) => {
     try {
       return new Date(iso).toLocaleDateString(locale, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       });
     } catch {
       return iso;
@@ -319,43 +320,48 @@ export default function ProjectDetail() {
   };
 
   if (loading) {
-    return <LoadingScreen message={t('details.loading')} />;
+    return <LoadingScreen message={t("details.loading")} />;
   }
 
   if (error || !project) {
     return (
       <NotFoundScreen
-        eyebrow={t('details.not_found_eyebrow')}
+        eyebrow={t("details.not_found_eyebrow")}
         bigText={`#${id}`}
-        title={t('details.not_found_title')}
-        description={t('details.not_found_desc')}
-        primaryCta={{ label: t('details.back_home'), to: '/', icon: Icon.ArrowLeft }}
+        title={t("details.not_found_title")}
+        description={t("details.not_found_desc")}
+        primaryCta={{
+          label: t("details.back_home"),
+          to: "/",
+          icon: Icon.ArrowLeft,
+        }}
       />
     );
   }
 
-  const isAuthor = user && project.authorId && user.user_id === project.authorId;
+  const isAuthor =
+    user && project.authorId && user.user_id === project.authorId;
 
-  let joinButtonLabel = t('details.cta.join');
+  let joinButtonLabel = t("details.cta.join");
   let joinButtonDisabled = false;
   let joinButtonIsLeave = false;
 
   if (!user) {
-    joinButtonLabel = t('details.cta.join');
+    joinButtonLabel = t("details.cta.join");
   } else if (isAuthor) {
-    joinButtonLabel = t('details.cta.owner');
+    joinButtonLabel = t("details.cta.owner");
     joinButtonDisabled = true;
-  } else if (joinStatus === 'pending') {
-    joinButtonLabel = t('details.cta.pending');
+  } else if (joinStatus === "pending") {
+    joinButtonLabel = t("details.cta.pending");
     joinButtonDisabled = true;
-  } else if (joinStatus === 'approved') {
-    joinButtonLabel = t('details.cta.leave');
+  } else if (joinStatus === "approved") {
+    joinButtonLabel = t("details.cta.leave");
     joinButtonIsLeave = true;
   }
 
   const handleJoinClick = () => {
     if (!user) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
     if (joinButtonDisabled) return;
@@ -369,11 +375,10 @@ export default function ProjectDetail() {
   return (
     <div className="w-full bg-bg min-h-screen">
       <div className="max-w-wide mx-auto px-4 sm:px-6 lg:px-8 py-page">
-
         <PageBreadcrumb
           items={[
-            { label: t('breadcrumb.home'), to: '/' },
-            { label: t('breadcrumb.project', { id: project.id }) },
+            { label: t("breadcrumb.home"), to: "/" },
+            { label: t("breadcrumb.project", { id: project.id }) },
           ]}
         />
 
@@ -385,7 +390,7 @@ export default function ProjectDetail() {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-caption font-medium text-text-muted bg-transparent border border-accent/20 rounded-button hover:border-accent hover:text-text transition-all font-mono"
             >
               <Icon.Edit className="w-3.5 h-3.5" />
-              {t('details.edit')}
+              {t("details.edit")}
             </Link>
             <button
               type="button"
@@ -394,7 +399,7 @@ export default function ProjectDetail() {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-caption font-medium text-red-400 bg-transparent border border-red-400/30 rounded-button hover:bg-red-400/10 hover:border-red-400/60 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed font-mono"
             >
               <Icon.Trash className="w-3.5 h-3.5" />
-              {deleting ? t('details.deleting') : t('details.delete')}
+              {deleting ? t("details.deleting") : t("details.delete")}
             </button>
           </div>
         )}
@@ -402,7 +407,6 @@ export default function ProjectDetail() {
         {/* HERO — İki Sütun Bento */}
         <div className="bg-surface border border-accent/10 rounded-card overflow-hidden mb-8">
           <div className="grid grid-cols-1 lg:grid-cols-2">
-
             <div className="relative bg-bg border-b lg:border-b-0 lg:border-r border-accent/10 min-h-[224px] lg:min-h-[280px] flex items-center justify-center">
               {project.imageUrl ? (
                 <img
@@ -420,11 +424,12 @@ export default function ProjectDetail() {
             </div>
 
             <div className="p-6 sm:p-8 flex flex-col">
-
               <div className="mb-4">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-caption font-semibold text-accent bg-accent/10 border border-accent/20 rounded-pill font-mono">
                   <span className="w-1.5 h-1.5 bg-accent rounded-pill animate-pulse"></span>
-                  {project.status}
+                  {t(`project_status.${project.status?.toLowerCase()}`, {
+                    defaultValue: project.status,
+                  }) || project.status}
                 </span>
               </div>
 
@@ -457,7 +462,7 @@ export default function ProjectDetail() {
                           height="20"
                           className="w-full h-full object-cover"
                           onError={(e) => {
-                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.style.display = "none";
                           }}
                         />
                       ) : (
@@ -466,7 +471,9 @@ export default function ProjectDetail() {
                         </div>
                       )}
                     </div>
-                    <span className="group-hover:underline underline-offset-2">{project.author}</span>
+                    <span className="group-hover:underline underline-offset-2">
+                      {project.author}
+                    </span>
                   </Link>
                 )}
               </div>
@@ -493,7 +500,9 @@ export default function ProjectDetail() {
                 {isAuthor ? (
                   <div className="w-full px-4 py-2.5 bg-bg/60 text-text-muted text-body-sm font-medium rounded-button text-center border border-accent/10 font-mono inline-flex items-center justify-center gap-2">
                     <Icon.StarFilled className="w-4 h-4" />
-                    {t('details.cta.your_project', { count: formatCount(project.stars) })}
+                    {t("details.cta.your_project", {
+                      count: formatCount(project.stars),
+                    })}
                   </div>
                 ) : (
                   <button
@@ -501,21 +510,25 @@ export default function ProjectDetail() {
                     disabled={starLoading}
                     className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-body-sm font-bold rounded-button border transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed font-mono ${
                       project.starred
-                        ? 'bg-accent/10 text-accent border-accent/50 hover:bg-accent/15 hover:shadow-[0_0_20px_-5px_rgba(239,228,206,0.3)]'
-                        : 'bg-transparent text-text border-accent/30 hover:border-accent hover:bg-surface'
+                        ? "bg-accent/10 text-accent border-accent/50 hover:bg-accent/15 hover:shadow-[0_0_20px_-5px_rgba(239,228,206,0.3)]"
+                        : "bg-transparent text-text border-accent/30 hover:border-accent hover:bg-surface"
                     }`}
                   >
                     {starLoading ? (
-                      t('details.cta.starring')
+                      t("details.cta.starring")
                     ) : project.starred ? (
                       <>
                         <Icon.StarFilled className="w-4 h-4" />
-                        {t('details.cta.starred', { count: formatCount(project.stars) })}
+                        {t("details.cta.starred", {
+                          count: formatCount(project.stars),
+                        })}
                       </>
                     ) : (
                       <>
                         <Icon.Star className="w-4 h-4" />
-                        {t('details.cta.star', { count: formatCount(project.stars) })}
+                        {t("details.cta.star", {
+                          count: formatCount(project.stars),
+                        })}
                       </>
                     )}
                   </button>
@@ -535,7 +548,7 @@ export default function ProjectDetail() {
                     disabled={joinButtonDisabled}
                     className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-accent text-bg text-body-sm font-bold rounded-button border border-accent hover:bg-accent/90 transition-all hover:shadow-[0_0_30px_-5px_rgba(239,228,206,0.4)] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-accent disabled:hover:shadow-none font-mono"
                   >
-                    {joinStatus === 'pending' ? (
+                    {joinStatus === "pending" ? (
                       <Icon.Clock className="w-4 h-4" />
                     ) : joinButtonDisabled ? (
                       <Icon.Star className="w-4 h-4" />
@@ -552,13 +565,11 @@ export default function ProjectDetail() {
 
         {/* ALT İÇERİK */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
           <div className="lg:col-span-2 space-y-8">
-
             {(project.githubUrl || project.demoUrl) && (
               <div>
                 <h2 className="text-caption font-bold text-text uppercase tracking-wider mb-3 font-mono">
-                  {t('details.section.links')}
+                  {t("details.section.links")}
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {project.githubUrl && (
@@ -587,33 +598,34 @@ export default function ProjectDetail() {
               </div>
             )}
 
-            {project.contributorsList && project.contributorsList.length > 0 && (
-              <div>
-                <h2 className="text-caption font-bold text-text uppercase tracking-wider mb-3 font-mono">
-                  {t('details.section.contributors', {
-                    count: project.contributorsList.length,
-                    max: project.maxContributors,
-                  })}
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {project.contributorsList.map((contributor) => (
-                    <ContributorCard
-                      key={contributor.user_id}
-                      contributor={contributor}
-                      onRemove={
-                        isAuthor
-                          ? () => handleOpenRemoveModal(contributor)
-                          : undefined
-                      }
-                    />
-                  ))}
+            {project.contributorsList &&
+              project.contributorsList.length > 0 && (
+                <div>
+                  <h2 className="text-caption font-bold text-text uppercase tracking-wider mb-3 font-mono">
+                    {t("details.section.contributors", {
+                      count: project.contributorsList.length,
+                      max: project.maxContributors,
+                    })}
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {project.contributorsList.map((contributor) => (
+                      <ContributorCard
+                        key={contributor.user_id}
+                        contributor={contributor}
+                        onRemove={
+                          isAuthor
+                            ? () => handleOpenRemoveModal(contributor)
+                            : undefined
+                        }
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             <div>
               <h2 className="text-caption font-bold text-text uppercase tracking-wider mb-3 font-mono">
-                {t('details.section.about')}
+                {t("details.section.about")}
               </h2>
               <p className="text-text-muted leading-relaxed text-body whitespace-pre-line">
                 {project.longDescription || project.description}
@@ -623,44 +635,54 @@ export default function ProjectDetail() {
 
           <aside className="lg:col-span-1">
             <div className="lg:sticky lg:top-20 space-y-4">
-
               <div className="bg-surface/50 border border-accent/10 rounded-card p-5">
                 <h3 className="text-caption font-bold text-text uppercase tracking-wider mb-3 font-mono">
-                  {t('details.section.info')}
+                  {t("details.section.info")}
                 </h3>
                 <dl className="space-y-2.5 text-body-sm">
                   <div className="flex items-center justify-between">
-                    <dt className="text-text-muted font-mono">{t('details.meta.stars')}</dt>
+                    <dt className="text-text-muted font-mono">
+                      {t("details.meta.stars")}
+                    </dt>
                     <dd className="font-medium text-text font-mono tabular-nums inline-flex items-center gap-1">
                       <Icon.StarFilled className="w-3.5 h-3.5 text-text-muted" />
                       {formatCount(project.stars)}
                     </dd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <dt className="text-text-muted font-mono">{t('details.meta.contributors')}</dt>
+                    <dt className="text-text-muted font-mono">
+                      {t("details.meta.contributors")}
+                    </dt>
                     <dd className="font-medium text-text font-mono tabular-nums inline-flex items-center gap-1">
                       <Icon.Users className="w-3.5 h-3.5 text-text-muted" />
                       {project.contributorsList?.length || 0}
-                      <span className="text-text-muted">/ {project.maxContributors}</span>
+                      <span className="text-text-muted">
+                        / {project.maxContributors}
+                      </span>
                     </dd>
                   </div>
                   <div className="flex items-center justify-between pt-2.5 border-t border-accent/10">
-                    <dt className="text-text-muted font-mono">{t('details.meta.status')}</dt>
-                    <dd className="font-medium text-accent font-mono">{project.status}</dd>
+                    <dt className="text-text-muted font-mono">
+                      {t("details.meta.status")}
+                    </dt>
+                    <dd className="font-medium text-accent font-mono">
+                      {t(`project_status.${project.status?.toLowerCase()}`, {
+                        defaultValue: project.status,
+                      }) || project.status}
+                    </dd>
                   </div>
                 </dl>
               </div>
 
               <div className="bg-surface/50 border border-accent/10 rounded-card p-5">
                 <h3 className="text-caption font-bold text-text uppercase tracking-wider mb-3 font-mono">
-                  {t('details.section.share')}
+                  {t("details.section.share")}
                 </h3>
                 <div className="flex items-center gap-2">
-
                   <button
                     onClick={handleCopyLink}
                     className="group relative flex flex-col items-center gap-1.5 flex-1 py-3 rounded-button bg-bg/60 border border-accent/15 hover:border-accent/60 hover:bg-bg transition-all cursor-pointer"
-                    aria-label={t('details.share.copy')}
+                    aria-label={t("details.share.copy")}
                   >
                     <span className="text-text-muted group-hover:text-accent transition-colors">
                       {copied ? (
@@ -670,7 +692,9 @@ export default function ProjectDetail() {
                       )}
                     </span>
                     <span className="text-mono-sm font-mono text-text-muted group-hover:text-text transition-colors">
-                      {copied ? t('details.share.copied') : t('details.share.link')}
+                      {copied
+                        ? t("details.share.copied")
+                        : t("details.share.link")}
                     </span>
                   </button>
 
@@ -679,22 +703,20 @@ export default function ProjectDetail() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group flex flex-col items-center gap-1.5 flex-1 py-3 rounded-button bg-bg/60 border border-accent/15 hover:border-accent/60 hover:bg-bg transition-all cursor-pointer"
-                    aria-label={t('details.share.twitter')}
+                    aria-label={t("details.share.twitter")}
                   >
                     <span className="text-text-muted group-hover:text-accent transition-colors">
                       <Icon.Twitter className="w-4 h-4" />
                     </span>
                     <span className="text-mono-sm font-mono text-text-muted group-hover:text-text transition-colors">
-                      {t('details.share.twitter')}
+                      {t("details.share.twitter")}
                     </span>
                   </a>
                 </div>
               </div>
-
             </div>
           </aside>
         </div>
-
       </div>
 
       {/* Modallar */}
@@ -719,7 +741,7 @@ export default function ProjectDetail() {
         isOpen={isRemoveModalOpen}
         onClose={handleCloseRemoveModal}
         onConfirm={handleRemoveContributor}
-        username={removeTarget?.username || ''}
+        username={removeTarget?.username || ""}
         submitting={removeSubmitting}
       />
 
@@ -728,10 +750,10 @@ export default function ProjectDetail() {
         isOpen={isDeleteModalOpen}
         onClose={handleCloseDeleteModal}
         onConfirm={handleConfirmDelete}
-        title={t('details.delete')}
-        description={t('details.delete_confirm')}
-        confirmLabel={t('details.delete')}
-        submittingLabel={t('details.deleting')}
+        title={t("details.delete")}
+        description={t("details.delete_confirm")}
+        confirmLabel={t("details.delete")}
+        submittingLabel={t("details.deleting")}
         submitting={deleting}
         variant="danger"
         icon="trash"

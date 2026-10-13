@@ -233,8 +233,10 @@ export const en = {
     },
     request: {
       wants_to_join: "wants to join",
-      reject: "reject",
       approve: "approve",
+      reject: "reject",
+      approved: "Application approved",
+      rejected: "Application rejected",
     },
   },
 
@@ -325,6 +327,7 @@ export const en = {
         generic: "Something went wrong",
         network: "Couldn't connect to server",
       },
+      username_cooldown_hint: "Username can be changed once every 48 hours.",
     },
 
     // Appearance sayfası
@@ -423,6 +426,12 @@ export const en = {
     },
   },
 
+  project_status: {
+    online: "Online",
+    offline: "Offline",
+    archived: "Archived",
+  },
+
   // ─── DETAILS ───
   details: {
     loading: "Loading project...",
@@ -435,6 +444,7 @@ export const en = {
     delete: "delete",
     delete_confirm:
       "Are you sure you want to delete this project? This action cannot be undone.",
+    delete_success: "Project deleted",
     delete_failed: "Delete failed",
     section: {
       links: "/links",
@@ -703,6 +713,8 @@ export const en = {
 
     // permission
     forbidden: "You don't have permission for this action",
+    username_change_too_frequent:
+      "You can change your username every 48 hours. Please try again later.",
 
     // profanity
     title_profanity: "Title contains inappropriate language",

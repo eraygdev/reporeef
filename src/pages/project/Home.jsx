@@ -1,26 +1,25 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { Link } from "react-router-dom";
 import { useConfig } from "../../context/ConfigContext";
-import { useLanguage } from '../../i18n/LanguageContext';
-import EmptyState from '../../components/ui/EmptyState';
-import ScrollHint from '../../components/ui/ScrollHint';
-import SortDropdown from '../../components/ui/SortDropdown';
-import Chip from '../../components/ui/Chip';
-import CardSkeletonGrid from '../../components/ui/CardSkeletonGrid';
-import ViewToggle from '../../components/ui/ViewToggle';
-import ProjectCard from '../../components/project/ProjectCard';
-import CategoryModal from '../../components/project/CategoryPick';
-import * as Icon from '../../components/ui/Icons';
-import { TEXT_REGEX, findInvalidChar } from '../../utils/validators';
-import { useSearchHistory } from '../../hooks/useSearchHistory';
-import { useProjectView } from '../../hooks/useProjectView';
+import { useLanguage } from "../../i18n/LanguageContext";
+import EmptyState from "../../components/ui/EmptyState";
+import ScrollHint from "../../components/ui/ScrollHint";
+import SortDropdown from "../../components/ui/SortDropdown";
+import Chip from "../../components/ui/Chip";
+import CardSkeletonGrid from "../../components/ui/CardSkeletonGrid";
+import ViewToggle from "../../components/ui/ViewToggle";
+import ProjectCard from "../../components/project/ProjectCard";
+import CategoryModal from "../../components/project/CategoryPick";
+import * as Icon from "../../components/ui/Icons";
+import { TEXT_REGEX, findInvalidChar } from "../../utils/validators";
+import { useSearchHistory } from "../../hooks/useSearchHistory";
+import { useProjectView } from "../../hooks/useProjectView";
 
-import { API } from '../../utils/api';
+import { API } from "../../utils/api";
 const LIMIT = 20;
 const MOBILE_LIMIT = 2;
 
 export default function Home() {
-  
   const { t } = useLanguage();
   const { limits } = useConfig();
   const [isMobile, setIsMobile] = useState(false);
@@ -28,29 +27,29 @@ export default function Home() {
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const VISIBLE_LIMIT = isMobile ? MOBILE_LIMIT : limits.visibleCategories;
 
   const [sortMode, setSortMode] = useState(() => {
     try {
-      const stored = localStorage.getItem('reporeef:sort');
-      if (['popular', 'hot', 'trending', 'newest'].includes(stored)) {
+      const stored = localStorage.getItem("reporeef:sort");
+      if (["popular", "hot", "trending", "newest"].includes(stored)) {
         return stored;
       }
     } catch {
       // localStorage erişilemezse default'a düş
     }
-    return 'popular';
+    return "popular";
   });
 
   // setSortMode çağrıldığında localStorage'a yaz
   const handleSortChange = (mode) => {
     setSortMode(mode);
     try {
-      localStorage.setItem('reporeef:sort', mode);
+      localStorage.setItem("reporeef:sort", mode);
     } catch {
       // sessizce geç
     }
@@ -59,16 +58,16 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [loadError, setLoadError] = useState('');
+  const [loadError, setLoadError] = useState("");
 
-  const [searchInput, setSearchInput] = useState('');
-  const [activeSearch, setActiveSearch] = useState('');
-  const [searchWarning, setSearchWarning] = useState('');
+  const [searchInput, setSearchInput] = useState("");
+  const [activeSearch, setActiveSearch] = useState("");
+  const [searchWarning, setSearchWarning] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [matchMode, setMatchMode] = useState('or');
+  const [matchMode, setMatchMode] = useState("or");
 
   const [allCategories, setAllCategories] = useState([]);
 
@@ -87,22 +86,22 @@ export default function Home() {
     add: addHistory,
     remove: removeHistory,
     clear: clearHistory,
-  } = useSearchHistory('project', searchInput);
+  } = useSearchHistory("project", searchInput);
 
   const categoryKey = useMemo(
-    () => [...selectedCategories].sort().join(','),
-    [selectedCategories]
+    () => [...selectedCategories].sort().join(","),
+    [selectedCategories],
   );
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
         searchInputRef.current?.focus();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   useEffect(() => {
@@ -117,7 +116,7 @@ export default function Home() {
       })
       .catch((err) => {
         clearTimeout(timeoutId);
-        if (err.name === 'AbortError') return;
+        if (err.name === "AbortError") return;
         setAllCategories([]);
       });
 
@@ -130,24 +129,27 @@ export default function Home() {
   useEffect(() => {
     if (!isDropdownOpen) return;
     const handleClickOutside = (e) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target)) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(e.target)
+      ) {
         hideDropdown();
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isDropdownOpen, hideDropdown]);
 
   const fetchProjects = useCallback(
     async (searchValue, categoryIds, mode, offsetValue, signal) => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const params = new URLSearchParams({ limit: LIMIT, offset: offsetValue });
-      if (searchValue) params.set('search', searchValue);
+      if (searchValue) params.set("search", searchValue);
       if (categoryIds.length > 0) {
-        params.set('categoryIds', categoryIds.join(','));
-        params.set('mode', mode);
+        params.set("categoryIds", categoryIds.join(","));
+        params.set("mode", mode);
       }
-      params.set('sort', sortMode);
+      params.set("sort", sortMode);
 
       const res = await fetch(`${API}/projects?${params.toString()}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -155,13 +157,16 @@ export default function Home() {
       });
 
       if (!res.ok) {
-        throw new Error('fetch_failed');
+        throw new Error("fetch_failed");
       }
 
       const data = await res.json();
-      return Array.isArray(data) ? data : [];
+      return {
+        projects: Array.isArray(data.projects) ? data.projects : [],
+        hasMore: !!data.hasMore,
+      };
     },
-    [sortMode]
+    [sortMode],
   );
 
   useEffect(() => {
@@ -170,23 +175,23 @@ export default function Home() {
 
     const load = async () => {
       setLoading(true);
-      setLoadError('');
+      setLoadError("");
       try {
-        const categoryIds = categoryKey ? categoryKey.split(',') : [];
+        const categoryIds = categoryKey ? categoryKey.split(",") : [];
         const data = await fetchProjects(
           activeSearch,
           categoryIds,
           matchMode,
           0,
-          controller.signal
+          controller.signal,
         );
         clearTimeout(timeoutId);
-        setProjects(data);
-        setHasMore(data.length === LIMIT);
+        setProjects(data.projects);
+        setHasMore(data.hasMore);
         setLoading(false);
       } catch (err) {
         clearTimeout(timeoutId);
-        if (err.name === 'AbortError') return;
+        if (err.name === "AbortError") return;
         setLoadError(err.message);
         setLoading(false);
       }
@@ -208,10 +213,10 @@ export default function Home() {
         activeSearch,
         selectedCategories,
         matchMode,
-        projects.length
+        projects.length,
       );
-      setProjects((prev) => [...prev, ...data]);
-      setHasMore(data.length === LIMIT);
+      setProjects((prev) => [...prev, ...data.projects]);
+      setHasMore(data.hasMore);
     } catch {
       // sessizce
     } finally {
@@ -221,14 +226,14 @@ export default function Home() {
 
   const showSearchWarning = (char) => {
     setSearchWarning(char);
-    setTimeout(() => setSearchWarning(''), 3000);
+    setTimeout(() => setSearchWarning(""), 3000);
   };
 
   const handleSearchInputChange = (e) => {
     const value = e.target.value;
-    if (value === '') {
-      setSearchInput('');
-      setSearchWarning('');
+    if (value === "") {
+      setSearchInput("");
+      setSearchWarning("");
       return;
     }
     if (!TEXT_REGEX.test(value)) {
@@ -238,7 +243,7 @@ export default function Home() {
     }
     if (value.length > limits.maxSearchLen) return;
     setSearchInput(value);
-    setSearchWarning('');
+    setSearchWarning("");
   };
 
   const handleSearch = () => {
@@ -250,20 +255,20 @@ export default function Home() {
   };
 
   const handleSearchKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       handleSearch();
     }
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       hideDropdown();
       searchInputRef.current?.blur();
     }
   };
 
   const handleClearSearch = () => {
-    setSearchInput('');
-    setActiveSearch('');
-    setSearchWarning('');
+    setSearchInput("");
+    setActiveSearch("");
+    setSearchWarning("");
     searchInputRef.current?.focus();
   };
 
@@ -275,30 +280,29 @@ export default function Home() {
 
   const toggleCategory = (id) => {
     setSelectedCategories((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
     );
   };
 
   const clearFilters = () => {
-    setSearchInput('');
-    setActiveSearch('');
-    setSearchWarning('');
+    setSearchInput("");
+    setActiveSearch("");
+    setSearchWarning("");
     setSelectedCategories([]);
-    setMatchMode('or');
+    setMatchMode("or");
   };
 
   const hasActiveFilters =
-    activeSearch.trim() !== '' || selectedCategories.length > 0;
+    activeSearch.trim() !== "" || selectedCategories.length > 0;
 
   const showHistoryDropdown = isDropdownOpen && hasHistory && !searchWarning;
 
   const gridClass = isCompact
-    ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4'
-    : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6';
+    ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+    : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6";
 
   return (
     <div className="w-full bg-bg min-h-screen">
-
       {/* ═══════════════════════════════════════════
           HERO
       ═══════════════════════════════════════════ */}
@@ -308,24 +312,23 @@ export default function Home() {
         </div>
 
         <div className="relative max-w-default mx-auto px-5 sm:px-6 lg:px-8 pt-[calc(var(--spacing-hero)*1.4)] pb-hero text-center">
-
           {/* Eyebrow */}
           <div className="inline-flex items-center gap-2 px-3 py-1 mb-6 rounded-pill border border-accent/15 bg-surface/60">
             <span className="w-1.5 h-1.5 rounded-pill bg-accent animate-pulse" />
             <span className="text-mono-sm font-mono tracking-wider text-text-muted uppercase">
-              {t('home.hero.eyebrow')}
+              {t("home.hero.eyebrow")}
             </span>
           </div>
 
           {/* Headline */}
           <h1 className="text-h1 font-extrabold tracking-tight text-text leading-[1.08] mb-5">
-            {t('home.hero.title_1')}
+            {t("home.hero.title_1")}
             <br />
-            <span className="text-text-muted">{t('home.hero.title_2')}</span>
+            <span className="text-text-muted">{t("home.hero.title_2")}</span>
           </h1>
 
           <p className="max-w-xl mx-auto text-body-sm sm:text-body text-text-muted leading-relaxed mb-10">
-            {t('home.hero.subtitle')}
+            {t("home.hero.subtitle")}
           </p>
 
           {/* COMMAND PALETTE */}
@@ -333,8 +336,8 @@ export default function Home() {
             <div
               className={`relative flex items-center rounded-button border transition-all duration-300 overflow-hidden ${
                 isSearchFocused
-                  ? 'bg-surface border-accent/60 shadow-[0_0_0_4px_rgba(239,228,206,0.06),0_0_40px_-8px_rgba(239,228,206,0.25),0_1px_0_0_rgba(239,228,206,0.06)_inset]'
-                  : 'bg-surface border-accent/20 shadow-[0_1px_0_0_rgba(239,228,206,0.04)_inset,0_4px_16px_-8px_rgba(0,0,0,0.5)] hover:border-accent/40'
+                  ? "bg-surface border-accent/60 shadow-[0_0_0_4px_rgba(239,228,206,0.06),0_0_40px_-8px_rgba(239,228,206,0.25),0_1px_0_0_rgba(239,228,206,0.06)_inset]"
+                  : "bg-surface border-accent/20 shadow-[0_1px_0_0_rgba(239,228,206,0.04)_inset,0_4px_16px_-8px_rgba(0,0,0,0.5)] hover:border-accent/40"
               }`}
             >
               <span className="absolute left-4 text-text-muted pointer-events-none">
@@ -352,7 +355,7 @@ export default function Home() {
                   openDropdown();
                 }}
                 onBlur={() => setIsSearchFocused(false)}
-                placeholder={t('home.search.placeholder')}
+                placeholder={t("home.search.placeholder")}
                 maxLength={limits.maxSearchLen}
                 className="flex-1 bg-transparent pl-11 pr-32 py-3.5 text-body-sm text-text placeholder-text-muted/60 focus:outline-none font-mono"
               />
@@ -363,7 +366,7 @@ export default function Home() {
                     type="button"
                     onClick={handleClearSearch}
                     className="p-1.5 rounded-button text-text-muted hover:text-text hover:bg-bg/60 transition-colors cursor-pointer"
-                    aria-label={t('home.search.aria_clear')}
+                    aria-label={t("home.search.aria_clear")}
                   >
                     <Icon.Close className="w-3.5 h-3.5" />
                   </button>
@@ -371,8 +374,12 @@ export default function Home() {
 
                 {!searchInput && (
                   <div className="hidden sm:flex items-center gap-0.5 px-2 py-1 rounded-button bg-bg border border-accent/15 pointer-events-none">
-                    <kbd className="text-mono-sm font-mono font-bold text-text-muted leading-none">⌘</kbd>
-                    <kbd className="text-mono-sm font-mono font-bold text-text-muted leading-none">K</kbd>
+                    <kbd className="text-mono-sm font-mono font-bold text-text-muted leading-none">
+                      ⌘
+                    </kbd>
+                    <kbd className="text-mono-sm font-mono font-bold text-text-muted leading-none">
+                      K
+                    </kbd>
                   </div>
                 )}
 
@@ -382,7 +389,9 @@ export default function Home() {
                   className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 bg-accent text-bg text-caption font-bold rounded-button hover:bg-accent/90 transition-all hover:shadow-[0_0_20px_-3px_rgba(239,228,206,0.5)] cursor-pointer"
                 >
                   <Icon.Search className="w-3 h-3" />
-                  <span className="hidden sm:inline font-mono">{t('home.search.button')}</span>
+                  <span className="hidden sm:inline font-mono">
+                    {t("home.search.button")}
+                  </span>
                 </button>
               </div>
             </div>
@@ -390,7 +399,7 @@ export default function Home() {
             {searchWarning && (
               <p className="mt-2 text-mono-sm text-text-muted font-mono inline-flex items-center gap-1.5">
                 <Icon.Warning className="w-3 h-3" />
-                {t('home.search.warning_prefix')} "{searchWarning}"
+                {t("home.search.warning_prefix")} "{searchWarning}"
               </p>
             )}
 
@@ -399,14 +408,14 @@ export default function Home() {
               <div className="absolute top-full left-0 right-0 mt-2 bg-surface border border-accent/20 rounded-button shadow-2xl overflow-hidden z-100 animate-dropdown-center">
                 <div className="flex items-center justify-between px-3 py-2 border-b border-accent/10">
                   <span className="text-mono-sm font-bold text-text-muted uppercase tracking-wider font-mono">
-                    {t('home.search.history_label')}
+                    {t("home.search.history_label")}
                   </span>
                   <button
                     type="button"
                     onClick={clearHistory}
                     className="text-mono-sm text-text-muted hover:text-text transition-colors cursor-pointer font-mono"
                   >
-                    {t('home.search.history_clear')}
+                    {t("home.search.history_clear")}
                   </button>
                 </div>
                 <ul className="max-h-72 overflow-y-auto">
@@ -425,7 +434,9 @@ export default function Home() {
                           type="button"
                           onClick={() => removeHistory(q)}
                           className="p-2 mr-1 text-text-muted hover:text-text transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
-                          aria-label={t('home.search.history_remove', { query: q })}
+                          aria-label={t("home.search.history_remove", {
+                            query: q,
+                          })}
                         >
                           <Icon.Close className="w-3.5 h-3.5" />
                         </button>
@@ -444,13 +455,13 @@ export default function Home() {
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-transparent text-text text-body-sm font-semibold rounded-button border border-accent/20 hover:border-accent/50 hover:bg-surface/60 transition-all cursor-pointer"
             >
               <Icon.Plus className="w-3.5 h-3.5" />
-              {t('home.quick.create')}
+              {t("home.quick.create")}
             </Link>
             <Link
               to="/dashboard"
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-transparent text-text-muted text-body-sm font-semibold rounded-button hover:text-text transition-all cursor-pointer"
             >
-              {t('home.quick.dashboard')}
+              {t("home.quick.dashboard")}
               <Icon.ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -464,13 +475,13 @@ export default function Home() {
               label={
                 loading ? (
                   <>
-                    {t('home.load_more_loading')}
+                    {t("home.load_more_loading")}
                     <span className="animate-pulse">...</span>
                   </>
                 ) : projects.length > 0 ? (
-                  t('home.search.results_hint', { count: projects.length })
+                  t("home.search.results_hint", { count: projects.length })
                 ) : (
-                  t('home.search.no_results_hint')
+                  t("home.search.no_results_hint")
                 )
               }
               showIcon={!loading && projects.length > 0}
@@ -483,16 +494,18 @@ export default function Home() {
       {/* ═══════════════════════════════════════════
           KEŞFET
       ═══════════════════════════════════════════ */}
-      <div id="explore" className="relative z-0 w-full px-4 sm:px-6 lg:px-8 py-section scroll-mt-20">
+      <div
+        id="explore"
+        className="relative z-0 w-full px-4 sm:px-6 lg:px-8 py-section scroll-mt-20"
+      >
         <div className="max-w-wide mx-auto">
-
           <div className="mb-4 lg:mb-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3 lg:gap-4">
             <div className="min-w-0 lg:flex-1">
               <h2 className="text-h5 lg:text-h4 font-bold text-text tracking-tight font-mono">
-                {t('home.explore.title')}
+                {t("home.explore.title")}
               </h2>
               <p className="hidden sm:block text-mono-sm lg:text-body-sm text-text-muted mt-0.5 lg:mt-1">
-                {t('home.explore.subtitle')}
+                {t("home.explore.subtitle")}
               </p>
             </div>
 
@@ -500,8 +513,8 @@ export default function Home() {
               <ViewToggle
                 view={view}
                 onChange={setView}
-                labelNormal={t('home.explore.view_normal')}
-                labelCompact={t('home.explore.view_compact')}
+                labelNormal={t("home.explore.view_normal")}
+                labelCompact={t("home.explore.view_compact")}
               />
 
               {/* Sort selector */}
@@ -517,7 +530,7 @@ export default function Home() {
                 onClick={() => setSelectedCategories([])}
                 animationDelay="0ms"
               >
-                {t('home.categories.all')}
+                {t("home.categories.all")}
               </Chip>
               {allCategories.slice(0, VISIBLE_LIMIT).map((cat, index) => (
                 <Chip
@@ -532,11 +545,15 @@ export default function Home() {
               {allCategories.length > VISIBLE_LIMIT && (
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  style={{ animationDelay: `${Math.min(VISIBLE_LIMIT + 1, 12) * 30}ms` }}
+                  style={{
+                    animationDelay: `${Math.min(VISIBLE_LIMIT + 1, 12) * 30}ms`,
+                  }}
                   className="animate-chip inline-flex items-center gap-1 px-3 py-1.5 text-caption font-medium rounded-pill border border-dashed border-accent/30 text-text-muted hover:border-accent hover:text-text transition-all cursor-pointer font-mono"
                 >
                   <Icon.Plus className="w-3 h-3" />
-                  {t('home.categories.more', { count: allCategories.length - VISIBLE_LIMIT })}
+                  {t("home.categories.more", {
+                    count: allCategories.length - VISIBLE_LIMIT,
+                  })}
                 </button>
               )}
             </div>
@@ -544,23 +561,29 @@ export default function Home() {
 
           {selectedCategories.length > 1 && (
             <div className="animate-dropdown-center mb-5 flex items-center gap-2 text-caption">
-              <span className="text-text-muted font-mono">{t('home.match.label')}</span>
+              <span className="text-text-muted font-mono">
+                {t("home.match.label")}
+              </span>
               <div className="inline-flex rounded-button border border-accent/20 p-0.5 bg-surface/60">
                 <button
-                  onClick={() => setMatchMode('or')}
+                  onClick={() => setMatchMode("or")}
                   className={`px-3 py-1 rounded-button font-medium transition-all cursor-pointer font-mono ${
-                    matchMode === 'or' ? 'bg-accent text-bg' : 'text-text-muted hover:text-text'
+                    matchMode === "or"
+                      ? "bg-accent text-bg"
+                      : "text-text-muted hover:text-text"
                   }`}
                 >
-                  {t('home.match.any')}
+                  {t("home.match.any")}
                 </button>
                 <button
-                  onClick={() => setMatchMode('and')}
+                  onClick={() => setMatchMode("and")}
                   className={`px-3 py-1 rounded-button font-medium transition-all cursor-pointer font-mono ${
-                    matchMode === 'and' ? 'bg-accent text-bg' : 'text-text-muted hover:text-text'
+                    matchMode === "and"
+                      ? "bg-accent text-bg"
+                      : "text-text-muted hover:text-text"
                   }`}
                 >
-                  {t('home.match.all')}
+                  {t("home.match.all")}
                 </button>
               </div>
             </div>
@@ -570,32 +593,36 @@ export default function Home() {
             <div className="mb-4 flex items-center justify-between gap-3">
               <p className="text-caption text-text-muted font-mono">
                 {selectedCategories.length > 0
-                  ? t('home.filters.count_with_categories', {
+                  ? t("home.filters.count_with_categories", {
                       count: projects.length,
                       catCount: selectedCategories.length,
                     })
-                  : t('home.filters.count', { count: projects.length })}
+                  : t("home.filters.count", { count: projects.length })}
               </p>
               <button
                 onClick={clearFilters}
                 className="text-caption text-text-muted hover:text-text underline underline-offset-2 transition-colors cursor-pointer font-mono"
               >
-                {t('home.filters.clear')}
+                {t("home.filters.clear")}
               </button>
             </div>
           )}
 
-          {loading && <CardSkeletonGrid isCompact={isCompact} gridClass={gridClass} />}
+          {loading && (
+            <CardSkeletonGrid isCompact={isCompact} gridClass={gridClass} />
+          )}
 
           {loadError && !loading && (
             <div className="text-center py-20 rounded-card bg-surface/30 border border-accent/15">
               <Icon.Warning className="w-12 h-12 text-text-muted mx-auto mb-3" />
-              <h3 className="text-h5 font-bold text-text mb-1 font-mono">{t('home.error.title')}</h3>
+              <h3 className="text-h5 font-bold text-text mb-1 font-mono">
+                {t("home.error.title")}
+              </h3>
               <button
                 onClick={() => window.location.reload()}
                 className="mt-4 px-4 py-2 text-body-sm font-medium bg-accent text-bg rounded-button hover:bg-accent/90 transition-colors cursor-pointer font-mono"
               >
-                {t('home.error.retry')}
+                {t("home.error.retry")}
               </button>
             </div>
           )}
@@ -621,11 +648,14 @@ export default function Home() {
                         className="inline-flex items-center gap-2 px-6 py-3 bg-surface text-text text-body-sm font-semibold rounded-button border border-accent/20 hover:border-accent/60 hover:shadow-[0_0_30px_-5px_rgba(239,228,206,0.25)] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed font-mono"
                       >
                         {loadingMore ? (
-                          <>{t('home.load_more_loading')}<span className="animate-pulse">...</span></>
+                          <>
+                            {t("home.load_more_loading")}
+                            <span className="animate-pulse">...</span>
+                          </>
                         ) : (
                           <>
                             <Icon.ChevronDown className="w-4 h-4" />
-                            {t('home.load_more')}
+                            {t("home.load_more")}
                           </>
                         )}
                       </button>
@@ -635,12 +665,23 @@ export default function Home() {
               ) : (
                 <EmptyState
                   icon={Icon.Search}
-                  title={hasActiveFilters ? t('home.empty.filtered_title') : t('home.empty.empty_title')}
-                  description={hasActiveFilters ? t('home.empty.filtered_desc') : t('home.empty.empty_desc')}
+                  title={
+                    hasActiveFilters
+                      ? t("home.empty.filtered_title")
+                      : t("home.empty.empty_title")
+                  }
+                  description={
+                    hasActiveFilters
+                      ? t("home.empty.filtered_desc")
+                      : t("home.empty.empty_desc")
+                  }
                   cta={
                     hasActiveFilters
-                      ? { label: t('home.empty.clear_filters'), onClick: clearFilters }
-                      : { label: t('home.empty.create'), to: '/create-project' }
+                      ? {
+                          label: t("home.empty.clear_filters"),
+                          onClick: clearFilters,
+                        }
+                      : { label: t("home.empty.create"), to: "/create-project" }
                   }
                 />
               )}

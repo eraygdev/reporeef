@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useConfig } from "../../context/ConfigContext";
 import { useLanguage } from "../../i18n/LanguageContext";
+import { useFormGuard } from "../../hooks/useFormGuard";
 import Avatar from "../../components/ui/Avatar";
 import CharWarning from "../../components/ui/CharWarning";
 import InputClearButton from "../../components/ui/InputClearButton";
@@ -24,6 +25,7 @@ export default function Account() {
 
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
+  const [initial, setInitial] = useState(null);
   const [fetching, setFetching] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -41,6 +43,7 @@ export default function Account() {
     if (user?.username && user?.bio !== undefined) {
       setUsername(user.username || "");
       setBio(user.bio || "");
+      setInitial({ username: user.username || "", bio: user.bio || "" });
       setFetching(false);
       return;
     }
@@ -56,6 +59,10 @@ export default function Account() {
         if (cancelled) return;
         setUsername(data.username || "");
         setBio(data.bio || "");
+        setInitial({
+          username: data.username || "",
+          bio: data.bio || "",
+        });
         setFetching(false);
       })
       .catch(() => {
@@ -68,6 +75,7 @@ export default function Account() {
     };
   }, [userId, user?.username, user?.bio]);
 
+  const { isDirty, guard } = useFormGuard({ username, bio }, initial);
   const showWarning = (field, char) => {
     setWarnings((prev) => ({ ...prev, [field]: char }));
     setTimeout(() => {
@@ -83,6 +91,10 @@ export default function Account() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isDirty) return; // değişiklik yok → hiç istek atma
+    if (!guard()) return; // spam tıklama → throttle
+
     setError("");
     setSuccess("");
 
@@ -152,10 +164,15 @@ export default function Account() {
 
       await refreshUser();
 
+      setInitial({
+        username: username.trim(),
+        bio: bio.trim(),
+      });
+
       setSuccess(t("settings.account.success"));
       setSubmitting(false);
     } catch {
-      setError(t("errors.server_error"));
+      setError(t("errors.generic"));
       setSubmitting(false);
     }
   };
@@ -254,9 +271,14 @@ export default function Account() {
             onClick={() => clearField("username")}
           />
         </div>
-        <p className="mt-1 text-mono-sm text-text-muted font-mono">
-          {charCount(username)} / {limits.username.max}
-        </p>
+        <div className="mt-1 flex items-center justify-between gap-2">
+          <p className="text-mono-sm text-text-muted/70 font-mono">
+            {t("settings.account.username_cooldown_hint")}
+          </p>
+          <p className="text-mono-sm text-text-muted tabular-nums font-mono shrink-0">
+            {charCount(username)} / {limits.username.max}
+          </p>
+        </div>
         <CharWarning char={warnings.username} />
       </div>
 
@@ -349,8 +371,8 @@ export default function Account() {
       <div className="pt-2">
         <button
           type="submit"
-          disabled={submitting}
-          className="w-full sm:w-auto px-6 py-3 bg-accent text-bg text-body-sm font-bold rounded-button border border-accent hover:bg-accent/90 transition-all hover:shadow-[0_0_30px_-5px_rgba(239,228,206,0.4)] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed font-mono"
+          disabled={submitting || !isDirty}
+          className="w-full sm:w-auto px-6 py-3 bg-accent text-bg text-body-sm font-bold rounded-button border border-accent hover:bg-accent/90 transition-all hover:shadow-[0_0_30px_-5px_rgba(239,228,206,0.4)] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-accent disabled:hover:shadow-none font-mono"
         >
           {submitting
             ? t("settings.account.submitting")
