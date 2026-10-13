@@ -308,6 +308,8 @@ export const en = {
       avatar_label: "Profile picture",
       avatar_hint: "Automatically from your GitHub account.",
       username_label: "Username",
+      github_label: "GitHub",
+      github_hint: "Comes from your GitHub account, cannot be changed.",
       email_label: "Email",
       email_hint: "Comes from your GitHub account, cannot be changed.",
       bio_label: "About",
@@ -394,6 +396,31 @@ export const en = {
 
   callback: {
     loading: "signing in",
+  },
+
+  // ─── ONBOARDING ───
+  onboarding: {
+    eyebrow: "onboarding",
+    title: "Pick your username.",
+    subtitle: "Choose how you'll appear on RepoReef. You can change it later.",
+    github_hint: "You're signed in as @{{github_username}} on GitHub.",
+    github_use: "Use this",
+    username_label: "Username",
+    username_placeholder: "your-username",
+    bio_label: "About",
+    bio_placeholder: "Tell us a bit about yourself...",
+    submit: "Continue",
+    submitting: "Saving...",
+    error: {
+      empty: "Username cannot be empty.",
+      reserved: "Usernames starting with 'user_' are reserved.",
+      taken: "This username is already taken.",
+      too_short: "Username is too short (min {{min}} characters).",
+      too_long: "Username can be at most {{max}} characters.",
+      invalid_format:
+        "Username can't start or end with a symbol, or repeat symbols like '..'",
+      generic: "Something went wrong",
+    },
   },
 
   // ─── DETAILS ───
@@ -632,6 +659,10 @@ export const en = {
     username_empty: "Username cannot be empty",
     username_required: "Username is required",
     username_taken: "This username is already taken",
+    username_reserved: "Usernames starting with 'user_' are reserved",
+    username_invalid_format:
+      "Username can't start or end with a symbol, or repeat symbols like '..'",
+    onboarding_required: "Please complete your profile setup first",
 
     // project
     project_not_found: "project not found",

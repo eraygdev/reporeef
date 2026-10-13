@@ -3,14 +3,14 @@
 
 // ✅ Başlık / Kullanıcı Adı: sadece harf, rakam, _ . ve boşluk
 export const TITLE_REGEX = /^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ_. ]*$/;
-export const USERNAME_REGEX = /^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ_.\- ]*$/;
+export const USERNAME_REGEX = /^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ_.\-]*$/;
 
 // ✅ Açıklamalar / Bio: harf, rakam, noktalama, boşluk (emoji/CJK yok)
 export const TEXT_REGEX =
-  /^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ.,!?;: ()\[\]{}|@#$%&*+=~\s\-]*$/;
+  /^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ.,!?;:'"()\[\]{}\-_/|@#$%&*+=~\s]*$/;
 
 export const BIO_REGEX =
-  /^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ.,!?;: ()\[\]{}|\/@#$%&*+=~\s\-]*$/;
+  /^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ.,!?;:'"()\[\]{}\-_/|@#$%&*+=~\s]*$/;
 
 // ✅ Artık özel karakter/emoji girilemediği için length güvenli
 export function charCount(str) {
@@ -23,6 +23,36 @@ export function findInvalidChar(value, regex) {
     if (!regex.test(char)) return char;
   }
   return null;
+}
+
+// Username format kontrolü — baş/son noktalama + arka arkaya tekrar.
+// Karakter seti `USERNAME_REGEX` ile kontrol edilir; bu fonksiyon düzeni kontrol eder.
+//
+// Geçerli:   eray, eray-gdev, eray_gdev, eray.gdev, eray123
+// Geçersiz:  .eray, eray., _eray, eray-, eray..gdev, eray__gdev, eray--gdev
+export function isValidUsernameFormat(username) {
+  if (!username || username.length === 0) return false;
+
+  const first = username[0];
+  const last = username[username.length - 1];
+
+  // Baş/son harf veya rakam olmalı
+  const alnumRe = /^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ]$/;
+  if (!alnumRe.test(first) || !alnumRe.test(last)) return false;
+
+  // Boşluk yasak
+  if (username.includes(" ")) return false;
+
+  // Arka arkaya aynı noktalama
+  if (
+    username.includes("..") ||
+    username.includes("__") ||
+    username.includes("--")
+  ) {
+    return false;
+  }
+
+  return true;
 }
 
 // ✅ URL geçerli mi? (sadece http/https)

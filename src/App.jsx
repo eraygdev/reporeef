@@ -1,33 +1,41 @@
-import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { ConfigProvider } from './context/ConfigContext';
-import { LanguageProvider } from './i18n/LanguageContext';
-import Navbar from './components/layout/Navbar';
-import Sidebar from './components/layout/Sidebar';
-import Footer from './components/layout/Footer';
-import ScrollToTopButton from './components/ui/ScrollToTopButton';
-import { ToastProvider } from './components/ui/Toast';
-import PageTransition from './components/ui/PageTransition';
-import Home from './pages/project/Home';
-import UserProfile from './pages/user/Profile';
-import SettingsLayout from './pages/settings/SettingsLayout';
-import SettingsAccount from './pages/settings/Account';
-import SettingsAppearance from './pages/settings/Appearance';
-import SettingsNotifications from './pages/settings/Notifications';
-import SettingsDanger from './pages/settings/Danger';
-import Dashboard from './pages/user/Dashboard';
-import CreateProject from './pages/project/Create';
-import EditProject from './pages/project/Edit';
-import Login from './pages/auth/Login';
-import Register from './pages/auth/Register';
-import ProjectDetail from './pages/project/Details';
-import NotFound from './pages/NotFound';
-import AuthCallback from './pages/auth/Callback';
-import About from './pages/legal/About';
-import Privacy from './pages/legal/Privacy';
-import Terms from './pages/legal/Terms';
-import Cookies from './pages/legal/Cookies';
+import { useState, useEffect } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ConfigProvider } from "./context/ConfigContext";
+import { LanguageProvider } from "./i18n/LanguageContext";
+import Navbar from "./components/layout/Navbar";
+import Sidebar from "./components/layout/Sidebar";
+import Footer from "./components/layout/Footer";
+import ScrollToTopButton from "./components/ui/ScrollToTopButton";
+import { ToastProvider } from "./components/ui/Toast";
+import PageTransition from "./components/ui/PageTransition";
+import Home from "./pages/project/Home";
+import UserProfile from "./pages/user/Profile";
+import SettingsLayout from "./pages/settings/SettingsLayout";
+import SettingsAccount from "./pages/settings/Account";
+import SettingsAppearance from "./pages/settings/Appearance";
+import SettingsNotifications from "./pages/settings/Notifications";
+import SettingsDanger from "./pages/settings/Danger";
+import Dashboard from "./pages/user/Dashboard";
+import CreateProject from "./pages/project/Create";
+import EditProject from "./pages/project/Edit";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import Onboarding from "./pages/auth/Onboarding";
+import ProjectDetail from "./pages/project/Details";
+import NotFound from "./pages/NotFound";
+import AuthCallback from "./pages/auth/Callback";
+import About from "./pages/legal/About";
+import Privacy from "./pages/legal/Privacy";
+import Terms from "./pages/legal/Terms";
+import Cookies from "./pages/legal/Cookies";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -37,17 +45,22 @@ function ScrollToTop() {
   return null;
 }
 
-function Layout({ children, hideFooter }) {
+function Layout({ children, hideFooter, hideNavbar }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-bg flex flex-col font-sans text-text selection:bg-accent selection:text-bg">
-      <Navbar onOpenSidebar={() => setIsSidebarOpen(true)} />
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      {!hideNavbar && <Navbar onOpenSidebar={() => setIsSidebarOpen(true)} />}
+      {!hideNavbar && (
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+      )}
       {/* main: flex-1 flex flex-col + overflow-x-hidden — içerik taşmasın */}
       <main
         className={`flex-1 flex flex-col w-full bg-bg min-h-0 overflow-x-clip ${
-          hideFooter ? 'overflow-y-hidden' : ''
+          hideFooter ? "overflow-y-hidden" : ""
         }`}
       >
         {children}
@@ -58,20 +71,47 @@ function Layout({ children, hideFooter }) {
   );
 }
 
-const HIDE_FOOTER_ROUTES = ['/login', '/register', '/auth/callback'];
+const FULLSCREEN_ROUTES = [
+  "/login",
+  "/register",
+  "/auth/callback",
+  "/onboarding",
+];
 
 function AppContent() {
   const location = useLocation();
-  const hideFooter = HIDE_FOOTER_ROUTES.includes(location.pathname);
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+
+  const isFullscreen = FULLSCREEN_ROUTES.includes(location.pathname);
+
+  useEffect(() => {
+    if (loading) return;
+    if (!user) return;
+
+    // Onboarding tamamlanmadıysa → /onboarding'e zorla
+    if (!user.onboarded && location.pathname !== "/onboarding") {
+      navigate("/onboarding", { replace: true });
+      return;
+    }
+
+    // Onboarding tamamlandıysa /onboarding'de durmasın
+    if (user.onboarded && location.pathname === "/onboarding") {
+      navigate("/", { replace: true });
+    }
+  }, [user, loading, location.pathname, navigate]);
 
   return (
-    <Layout hideFooter={hideFooter}>
+    <Layout hideFooter={isFullscreen} hideNavbar={isFullscreen}>
       <PageTransition>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/profile/:username" element={<UserProfile />} />
           <Route path="/settings" element={<SettingsLayout />}>
-            <Route index element={<Navigate to="/settings/account" replace />} />
+            <Route
+              index
+              element={<Navigate to="/settings/account" replace />}
+            />
             <Route path="account" element={<SettingsAccount />} />
             <Route path="appearance" element={<SettingsAppearance />} />
             <Route path="notifications" element={<SettingsNotifications />} />
@@ -83,6 +123,7 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/project/:id" element={<ProjectDetail />} />
 
           <Route path="/about" element={<About />} />

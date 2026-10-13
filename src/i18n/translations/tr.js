@@ -304,6 +304,8 @@ export const tr = {
       avatar_label: "Profil fotoğrafı",
       avatar_hint: "GitHub hesabından otomatik geliyor.",
       username_label: "Kullanıcı Adı",
+      github_label: "GitHub",
+      github_hint: "GitHub hesabından geliyor, değiştirilemez.",
       email_label: "E-posta",
       email_hint: "GitHub hesabından geliyor, değiştirilemez.",
       bio_label: "Hakkımda",
@@ -392,6 +394,31 @@ export const tr = {
 
   callback: {
     loading: "giriş yapılıyor",
+  },
+
+  // ─── ONBOARDING ───
+  onboarding: {
+    eyebrow: "ilk kurulum",
+    title: "Kullanıcı adını seç.",
+    subtitle: "RepoReef'te nasıl görüneceğini seç. Sonra değiştirebilirsin.",
+    github_hint: "GitHub'da @{{github_username}} olarak giriş yaptın.",
+    github_use: "Bunu kullan",
+    username_label: "Kullanıcı Adı",
+    username_placeholder: "kullanici-adin",
+    bio_label: "Hakkımda",
+    bio_placeholder: "Kendinden kısaca bahset...",
+    submit: "Devam Et",
+    submitting: "Kaydediliyor...",
+    error: {
+      empty: "Kullanıcı adı boş olamaz.",
+      reserved: "'user_' ile başlayan kullanıcı adları kullanılamaz.",
+      taken: "Bu kullanıcı adı zaten alınmış.",
+      too_short: "Kullanıcı adı çok kısa (en az {{min}} karakter).",
+      too_long: "Kullanıcı adı en fazla {{max}} karakter olabilir.",
+      invalid_format:
+        "Kullanıcı adı sembolle başlayıp bitemez veya '..' gibi tekrar edemez",
+      generic: "Bir hata oluştu",
+    },
   },
 
   // ─── DETAILS ───
@@ -631,6 +658,10 @@ export const tr = {
     username_empty: "Kullanıcı adı boş olamaz",
     username_required: "Kullanıcı adı gerekli",
     username_taken: "Bu kullanıcı adı zaten alınmış",
+    username_reserved: "'user_' ile başlayan kullanıcı adları kullanılamaz",
+    username_invalid_format:
+      "Kullanıcı adı sembolle başlayıp bitemez veya '..' gibi tekrar edemez",
+    onboarding_required: "Lütfen önce profil kurulumunu tamamla",
 
     // proje
     project_not_found: "proje bulunamadı",
