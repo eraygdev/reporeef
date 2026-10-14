@@ -762,4 +762,13 @@ export const tr = {
     delete_failed: "Silme başarısız oldu",
     action_failed: "İşlem başarısız oldu",
   },
+
+  // ─── COOKIE BANNER ───
+  cookie_banner: {
+    aria: "Çerez bildirimi",
+    title: "Çerezler ve Gizlilik",
+    desc: "RepoReef yalnızca kimlik doğrulama ve dil tercihi için zorunlu çerezleri ve localStorage kullanır. Takip veya analitik yoktur.",
+    learn_more: "Daha fazla bilgi",
+    accept: "Anladım",
+  },
 };

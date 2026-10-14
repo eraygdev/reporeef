@@ -765,4 +765,13 @@ export const en = {
     delete_failed: "Delete failed",
     action_failed: "Action failed",
   },
+
+  // ─── COOKIE BANNER ───
+  cookie_banner: {
+    aria: "Cookie notice",
+    title: "Cookies & Privacy",
+    desc: "RepoReef uses only essential cookies and localStorage for authentication and language preferences. No tracking, no analytics.",
+    learn_more: "Learn more",
+    accept: "Got it",
+  },
 };

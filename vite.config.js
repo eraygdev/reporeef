@@ -11,6 +11,14 @@ export default defineConfig({
     }),
   ],
   build: {
-    chunkSizeWarningLimit: 800, // 500 → 800
+    chunkSizeWarningLimit: 800,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // React ecosystem ayrı chunk — cache'lenebilir
+          "react-vendor": ["react", "react-dom", "react-router-dom"],
+        },
+      },
+    },
   },
 });
