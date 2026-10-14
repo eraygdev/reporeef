@@ -122,14 +122,19 @@ function AppContent() {
     if (loading) return;
     if (!user) return;
 
+    // onboarded claim'i yoksa (eski JWT — migration öncesi) true varsay.
+    // Aksi halde refreshUser network hatasıyla dönerse kullanıcı
+    // yanlışlıkla /onboarding'e sürüklenebilir.
+    const onboarded = user.onboarded !== false;
+
     // Onboarding tamamlanmadıysa → /onboarding'e zorla
-    if (!user.onboarded && location.pathname !== "/onboarding") {
+    if (!onboarded && location.pathname !== "/onboarding") {
       navigate("/onboarding", { replace: true });
       return;
     }
 
     // Onboarding tamamlandıysa /onboarding'de durmasın
-    if (user.onboarded && location.pathname === "/onboarding") {
+    if (onboarded && location.pathname === "/onboarding") {
       navigate("/", { replace: true });
     }
   }, [user, loading, location.pathname, navigate]);

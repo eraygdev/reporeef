@@ -19,7 +19,7 @@ import {
 import { API } from "../../utils/api";
 
 export default function Account() {
-  const { user, loading, refreshUser } = useAuth();
+  const { user, loading, refreshUser, login } = useAuth();
   const { limits } = useConfig();
   const { t } = useLanguage();
 
@@ -113,15 +113,6 @@ export default function Account() {
       return;
     }
 
-    if (charCount(username) > limits.username.max) {
-      setError(
-        t("settings.account.error.username_too_long", {
-          max: limits.username.max,
-        }),
-      );
-      return;
-    }
-
     if (charCount(username.trim()) < limits.username.min) {
       setError(t("errors.username_too_short"));
       return;
@@ -135,6 +126,7 @@ export default function Account() {
       );
       return;
     }
+
     if (charCount(bio) > limits.bio.max) {
       setError(
         t("settings.account.error.bio_too_long", { max: limits.bio.max }),
@@ -162,6 +154,13 @@ export default function Account() {
         return;
       }
 
+      const data = await res.json();
+
+      // Backend yeni JWT döner (onboarded=true + güncel is_premium claim'i).
+      // localStorage'a yaz ki sonraki istekler yeni token'la gitsin.
+      if (data.token) {
+        login(data.token);
+      }
       await refreshUser();
 
       setInitial({

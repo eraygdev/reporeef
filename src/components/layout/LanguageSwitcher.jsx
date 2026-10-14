@@ -1,11 +1,11 @@
-import { useState, useRef } from 'react';
-import { useClickOutside } from '../../hooks/useClickOutside';
-import { useLanguage } from '../../i18n/LanguageContext';
-import * as Icon from '../ui/Icons';
+import { useState, useRef } from "react";
+import { useClickOutside } from "../../hooks/useClickOutside";
+import { useLanguage } from "../../i18n/LanguageContext";
+import * as Icon from "../ui/Icons";
 
 const LANGS = [
-  { code: 'en', label: 'English', short: 'EN' },
-  { code: 'tr', label: 'Türkçe', short: 'TR' },
+  { code: "en", label: "English", short: "EN" },
+  { code: "tr", label: "Türkçe", short: "TR" },
 ];
 
 export default function LanguageSwitcher() {
@@ -22,7 +22,7 @@ export default function LanguageSwitcher() {
       <button
         onClick={() => setOpen((v) => !v)}
         className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-caption font-medium rounded-button text-text-muted hover:text-text hover:bg-surface transition-colors cursor-pointer font-mono"
-        aria-label={t('language_switcher.aria')}
+        aria-label={t("language_switcher.aria")}
         aria-haspopup="menu"
         aria-expanded={open}
       >
@@ -38,7 +38,7 @@ export default function LanguageSwitcher() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 mt-2 w-40 bg-surface border border-accent/20 rounded-card shadow-2xl overflow-hidden z-[100] animate-dropdown"
+          className="absolute right-0 mt-2 w-40 bg-surface border border-accent/20 rounded-card shadow-2xl overflow-hidden z-100 animate-dropdown"
         >
           {LANGS.map((l) => {
             const isActive = l.code === lang;
@@ -52,8 +52,8 @@ export default function LanguageSwitcher() {
                 }}
                 className={`w-full flex items-center justify-between px-3.5 py-2.5 text-body-sm transition-colors cursor-pointer font-mono ${
                   isActive
-                    ? 'text-accent bg-accent/5'
-                    : 'text-text-muted hover:text-text hover:bg-bg/60'
+                    ? "text-accent bg-accent/5"
+                    : "text-text-muted hover:text-text hover:bg-bg/60"
                 }`}
               >
                 <span className="flex items-center gap-2">

@@ -1,13 +1,13 @@
-import { useState, useRef } from 'react';
-import { useClickOutside } from '../../hooks/useClickOutside';
-import { useLanguage } from '../../i18n/LanguageContext';
-import * as Icon from './Icons';
+import { useState, useRef } from "react";
+import { useClickOutside } from "../../hooks/useClickOutside";
+import { useLanguage } from "../../i18n/LanguageContext";
+import * as Icon from "./Icons";
 
 const OPTIONS = [
-  { value: 'hot', labelKey: 'home.sort.hot' },
-  { value: 'trending', labelKey: 'home.sort.trending' },
-  { value: 'newest', labelKey: 'home.sort.newest' },
-  { value: 'popular', labelKey: 'home.sort.popular' },
+  { value: "hot", labelKey: "home.sort.hot" },
+  { value: "trending", labelKey: "home.sort.trending" },
+  { value: "newest", labelKey: "home.sort.newest" },
+  { value: "popular", labelKey: "home.sort.popular" },
 ];
 
 export default function SortDropdown({ value, onChange }) {
@@ -40,7 +40,7 @@ export default function SortDropdown({ value, onChange }) {
       {open && (
         <div
           role="menu"
-          className="absolute left-0 mt-2 w-40 bg-surface border border-accent/20 rounded-card shadow-2xl overflow-hidden z-[100] animate-dropdown"
+          className="absolute left-0 mt-2 w-40 bg-surface border border-accent/20 rounded-card shadow-2xl overflow-hidden z-100 animate-dropdown"
         >
           {OPTIONS.map((option) => {
             const isActive = option.value === value;
@@ -55,13 +55,13 @@ export default function SortDropdown({ value, onChange }) {
                 }}
                 className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 text-body-sm transition-colors cursor-pointer font-mono ${
                   isActive
-                    ? 'text-accent bg-accent/5'
-                    : 'text-text-muted hover:text-text hover:bg-bg/60'
+                    ? "text-accent bg-accent/5"
+                    : "text-text-muted hover:text-text hover:bg-bg/60"
                 }`}
               >
                 <span
                   className={`shrink-0 w-1.5 h-1.5 rounded-pill ${
-                    isActive ? 'bg-accent' : 'bg-transparent'
+                    isActive ? "bg-accent" : "bg-transparent"
                   }`}
                   aria-hidden="true"
                 />

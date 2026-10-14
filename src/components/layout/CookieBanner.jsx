@@ -47,7 +47,7 @@ export default function CookieBanner() {
     <div
       role="region"
       aria-label={t("cookie_banner.aria")}
-      className="fixed bottom-4 left-4 right-4 sm:right-auto sm:left-6 sm:bottom-6 sm:max-w-md z-40 animate-dropdown-left"
+      className="fixed bottom-4 left-4 right-4 sm:right-auto sm:left-6 sm:bottom-6 sm:max-w-md z-40 animate-slide-up"
     >
       <div className="bg-surface/95 backdrop-blur-md border border-accent/20 rounded-card shadow-2xl overflow-hidden">
         <div className="p-4 sm:p-5">

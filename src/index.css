@@ -210,6 +210,30 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────
+   SLIDE UP — Alt köşe banner/panel (aşağıdan yukarı)
+───────────────────────────────────────────────────────── */
+@keyframes slide-up-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up-enter 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-up {
+    animation: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
    TOAST — Sağdan slide in
 ───────────────────────────────────────────────────────── */
 @keyframes toast-in {

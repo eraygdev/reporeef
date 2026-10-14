@@ -1,5 +1,13 @@
-import { createContext, useContext, useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import * as Icon from './Icons';
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useMemo,
+} from "react";
+import * as Icon from "./Icons";
 
 // ═══════════════════════════════════════════════════════════
 // TOAST SİSTEMİ
@@ -26,35 +34,37 @@ const MAX_TOASTS = 3;
 
 // ─── Tek Toast Bileşeni ───
 function ToastItem({ toast, onClose }) {
-  const IconComponent = {
-    success: Icon.Check,
-    error: Icon.Warning,
-    warning: Icon.Warning,
-    info: Icon.Info,
-  }[toast.type] || Icon.Info;
+  const IconComponent =
+    {
+      success: Icon.Check,
+      error: Icon.Warning,
+      warning: Icon.Warning,
+      info: Icon.Info,
+    }[toast.type] || Icon.Info;
 
-  const styles = {
-    success: {
-      border: 'border-accent/40',
-      icon: 'text-accent',
-      bg: 'bg-accent/10',
-    },
-    error: {
-      border: 'border-red-400/40',
-      icon: 'text-red-400',
-      bg: 'bg-red-400/10',
-    },
-    warning: {
-      border: 'border-amber-400/40',
-      icon: 'text-amber-400',
-      bg: 'bg-amber-400/10',
-    },
-    info: {
-      border: 'border-accent/30',
-      icon: 'text-accent',
-      bg: 'bg-accent/5',
-    },
-  }[toast.type] || {};
+  const styles =
+    {
+      success: {
+        border: "border-accent/40",
+        icon: "text-accent",
+        bg: "bg-accent/10",
+      },
+      error: {
+        border: "border-red-400/40",
+        icon: "text-red-400",
+        bg: "bg-red-400/10",
+      },
+      warning: {
+        border: "border-amber-400/40",
+        icon: "text-amber-400",
+        bg: "bg-amber-400/10",
+      },
+      info: {
+        border: "border-accent/30",
+        icon: "text-accent",
+        bg: "bg-accent/5",
+      },
+    }[toast.type] || {};
 
   return (
     <div
@@ -105,7 +115,7 @@ export function ToastProvider({ children }) {
 
   // Toast ekle
   const addToast = useCallback(
-    (message, type = 'info', duration = DEFAULT_DURATION) => {
+    (message, type = "info", duration = DEFAULT_DURATION) => {
       const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
       setToasts((prev) => {
@@ -132,7 +142,7 @@ export function ToastProvider({ children }) {
 
       return id;
     },
-    []
+    [],
   );
 
   // Cleanup
@@ -147,12 +157,12 @@ export function ToastProvider({ children }) {
   // Kısayol API
   const toast = useMemo(
     () => ({
-      success: (msg, dur) => addToast(msg, 'success', dur),
-      error: (msg, dur) => addToast(msg, 'error', dur),
-      warning: (msg, dur) => addToast(msg, 'warning', dur),
-      info: (msg, dur) => addToast(msg, 'info', dur),
+      success: (msg, dur) => addToast(msg, "success", dur),
+      error: (msg, dur) => addToast(msg, "error", dur),
+      warning: (msg, dur) => addToast(msg, "warning", dur),
+      info: (msg, dur) => addToast(msg, "info", dur),
     }),
-    [addToast]
+    [addToast],
   );
 
   const value = useMemo(() => ({ toast }), [toast]);
@@ -163,7 +173,7 @@ export function ToastProvider({ children }) {
 
       {/* Toast Container — Sağ üst */}
       <div
-        className="fixed top-20 right-4 sm:right-6 z-[200] flex flex-col gap-2 items-end pointer-events-none"
+        className="fixed top-20 right-4 sm:right-6 z-200 flex flex-col gap-2 items-end pointer-events-none"
         aria-live="polite"
         aria-atomic="true"
       >
@@ -180,7 +190,7 @@ export function ToastProvider({ children }) {
 export function useToast() {
   const ctx = useContext(ToastContext);
   if (!ctx) {
-    throw new Error('useToast must be used within ToastProvider');
+    throw new Error("useToast must be used within ToastProvider");
   }
   return ctx;
 }
