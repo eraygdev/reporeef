@@ -23,6 +23,15 @@ export default function CookieBanner() {
     }
   }, []);
 
+  // ScrollToTopButton'a haber ver — mobilde çakışmasın
+  useEffect(() => {
+    if (!visible) return;
+    window.dispatchEvent(new CustomEvent("cookie-banner-show"));
+    return () => {
+      window.dispatchEvent(new CustomEvent("cookie-banner-hide"));
+    };
+  }, [visible]);
+
   const handleAccept = () => {
     try {
       localStorage.setItem(STORAGE_KEY, "accepted");

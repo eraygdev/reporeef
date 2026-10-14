@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useLanguage } from '../../i18n/LanguageContext';
+import { useState, useEffect } from "react";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 // Sayfa aşağı kaydırılınca görünen "yukarı çık" butonu.
 // 300px'den sonra görünür, tıklayınca yumuşak scroll ile başa döner.
@@ -8,6 +8,7 @@ import { useLanguage } from '../../i18n/LanguageContext';
 export default function ScrollToTopButton() {
   const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
+  const [bannerVisible, setBannerVisible] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,25 +17,39 @@ export default function ScrollToTopButton() {
 
     handleScroll();
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // CookieBanner mobilde açıkken yukarı kay — çakışmayı önle
+  useEffect(() => {
+    const handleShow = () => setBannerVisible(true);
+    const handleHide = () => setBannerVisible(false);
+    window.addEventListener("cookie-banner-show", handleShow);
+    window.addEventListener("cookie-banner-hide", handleHide);
+    return () => {
+      window.removeEventListener("cookie-banner-show", handleShow);
+      window.removeEventListener("cookie-banner-hide", handleHide);
+    };
   }, []);
 
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
   return (
     <button
       onClick={scrollToTop}
-      aria-label={t('scroll_to_top.aria')}
-      className={`fixed bottom-6 right-6 z-40 w-11 h-11 rounded-button bg-bg/80 backdrop-blur-md border border-accent/20 text-accent hover:border-accent/60 hover:bg-bg/95 hover:shadow-[0_0_30px_-5px_rgba(239,228,206,0.35)] active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer ${
+      aria-label={t("scroll_to_top.aria")}
+      className={`fixed right-6 z-40 w-11 h-11 rounded-button bg-bg/80 backdrop-blur-md border border-accent/20 text-accent hover:border-accent/60 hover:bg-bg/95 hover:shadow-[0_0_30px_-5px_rgba(239,228,206,0.35)] active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer ${
+        bannerVisible ? "bottom-40 sm:bottom-6" : "bottom-6"
+      } ${
         visible
-          ? 'opacity-100 translate-y-0 pointer-events-auto'
-          : 'opacity-0 translate-y-4 pointer-events-none'
+          ? "opacity-100 translate-y-0 pointer-events-auto"
+          : "opacity-0 translate-y-4 pointer-events-none"
       }`}
     >
       <svg
