@@ -426,12 +426,6 @@ export const en = {
     },
   },
 
-  project_status: {
-    online: "Online",
-    offline: "Offline",
-    archived: "Archived",
-  },
-
   // ─── DETAILS ───
   details: {
     loading: "Loading project...",
@@ -456,7 +450,6 @@ export const en = {
     meta: {
       stars: "stars",
       contributors: "contributors",
-      status: "status",
     },
     cta: {
       your_project: "this project is yours · {{count}} stars",

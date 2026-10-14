@@ -424,12 +424,6 @@ export const tr = {
     },
   },
 
-  project_status: {
-    online: "Yayında",
-    offline: "Çevrimdışı",
-    archived: "Arşivlendi",
-  },
-
   // ─── DETAILS ───
   details: {
     loading: "Proje yükleniyor...",
@@ -454,7 +448,6 @@ export const tr = {
     meta: {
       stars: "yıldız",
       contributors: "katkıcı",
-      status: "durum",
     },
     cta: {
       your_project: "bu proje senin · {{count}} yıldız",

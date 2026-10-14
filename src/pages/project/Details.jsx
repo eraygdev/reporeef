@@ -424,15 +424,6 @@ export default function ProjectDetail() {
             </div>
 
             <div className="p-6 sm:p-8 flex flex-col">
-              <div className="mb-4">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-caption font-semibold text-accent bg-accent/10 border border-accent/20 rounded-pill font-mono">
-                  <span className="w-1.5 h-1.5 bg-accent rounded-pill animate-pulse"></span>
-                  {t(`project_status.${project.status?.toLowerCase()}`, {
-                    defaultValue: project.status,
-                  }) || project.status}
-                </span>
-              </div>
-
               <h1 className="text-h3 font-extrabold text-text tracking-tight mb-3 leading-tight">
                 {project.title}
               </h1>
@@ -659,16 +650,6 @@ export default function ProjectDetail() {
                       <span className="text-text-muted">
                         / {project.maxContributors}
                       </span>
-                    </dd>
-                  </div>
-                  <div className="flex items-center justify-between pt-2.5 border-t border-accent/10">
-                    <dt className="text-text-muted font-mono">
-                      {t("details.meta.status")}
-                    </dt>
-                    <dd className="font-medium text-accent font-mono">
-                      {t(`project_status.${project.status?.toLowerCase()}`, {
-                        defaultValue: project.status,
-                      }) || project.status}
                     </dd>
                   </div>
                 </dl>

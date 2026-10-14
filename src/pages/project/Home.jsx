@@ -42,7 +42,7 @@ export default function Home() {
     } catch {
       // localStorage erişilemezse default'a düş
     }
-    return "popular";
+    return "hot"; // varsayılan: popüler (yıldız + katkıcı + zaman)
   });
 
   // setSortMode çağrıldığında localStorage'a yaz
