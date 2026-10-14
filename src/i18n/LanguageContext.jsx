@@ -1,24 +1,53 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { translations, getNestedValue, interpolate } from './translations/index';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
+import {
+  loadTranslation,
+  getNestedValue,
+  interpolate,
+} from "./translations/index";
 
 const LanguageContext = createContext(null);
 
-const STORAGE_KEY = 'reporeef:lang';
-const SUPPORTED = ['en', 'tr'];
-const DEFAULT_LANG = 'en';
+const STORAGE_KEY = "reporeef:lang";
+const SUPPORTED = ["en", "tr"];
+const DEFAULT_LANG = "en";
+
+// ═══════════════════════════════════════════════════════════
+// KRİTİK FALLBACK — Dil chunk'ı yüklenene kadar (100-300ms)
+// gösterilen minimal İngilizce metinler. Sadece ilk render'da
+// görünen kritik yerler (navbar, loading, footer butonları).
+// ═══════════════════════════════════════════════════════════
+const CRITICAL_EN = {
+  navbar: {
+    auth: { login: "Sign In", register: "Sign Up" },
+    aria: {
+      open_menu: "Open menu",
+      search_users: "Search users",
+      logo: "RepoReef home",
+    },
+  },
+  auth: { loading: "Loading..." },
+  callback: { loading: "signing in" },
+  scroll_to_top: { aria: "Back to top" },
+  footer: {
+    cta: { github_start: "Start with GitHub" },
+  },
+};
 
 // Cihaz dilinden başlangıç dilini seç
 function detectInitialLang() {
   try {
-    // 1) localStorage'da varsa onu kullan
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored && SUPPORTED.includes(stored)) return stored;
 
-    // 2) Değilse tarayıcı diline bak
-    const browserLang = navigator.language?.toLowerCase() || '';
-    if (browserLang.startsWith('tr')) return 'tr';
+    const browserLang = navigator.language?.toLowerCase() || "";
+    if (browserLang.startsWith("tr")) return "tr";
 
-    // 3) Fallback
     return DEFAULT_LANG;
   } catch {
     return DEFAULT_LANG;
@@ -27,15 +56,40 @@ function detectInitialLang() {
 
 export function LanguageProvider({ children }) {
   const [lang, setLangState] = useState(detectInitialLang);
+  const [translations, setTranslations] = useState(null);
+  const [ready, setReady] = useState(false);
 
   // lang değişince localStorage + html lang attribute
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, lang);
     } catch {
-      // localStorage erişilemezse sessizce geç (private mode, kota dolu)
+      // sessizce geç
     }
     document.documentElement.lang = lang;
+  }, [lang]);
+
+  // Aktif dilin translations'ını lazy yükle
+  useEffect(() => {
+    let cancelled = false;
+    setReady(false);
+
+    loadTranslation(lang)
+      .then((t) => {
+        if (cancelled) return;
+        setTranslations(t);
+        setReady(true);
+      })
+      .catch((err) => {
+        if (import.meta.env.DEV) {
+          console.warn("[i18n] translation load failed:", err);
+        }
+        if (!cancelled) setReady(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [lang]);
 
   const setLang = useCallback((newLang) => {
@@ -45,35 +99,32 @@ export function LanguageProvider({ children }) {
   }, []);
 
   const toggleLang = useCallback(() => {
-    setLangState((prev) => (prev === 'en' ? 'tr' : 'en'));
+    setLangState((prev) => (prev === "en" ? "tr" : "en"));
   }, []);
 
-  // t('home.hero.title_1', { name: 'Eray' }) → çeviri
   const t = useCallback(
     (key, params) => {
-      // 1) İstenen dilde ara
-      const value = getNestedValue(translations[lang], key);
+      // Henüz yüklenmedi → kritik fallback (navbar, loading vs.)
+      if (!translations) {
+        const fallback = getNestedValue(CRITICAL_EN, key);
+        return fallback !== undefined ? interpolate(fallback, params) : key;
+      }
 
-      // 2) Bulunamadıysa default dilde ara (fallback)
-      const fallbackValue =
-        value ?? getNestedValue(translations[DEFAULT_LANG], key);
-
-      // 3) Hiçbir yerde yoksa key'i döndür (debug için görünür)
-      if (fallbackValue === undefined) {
+      const value = getNestedValue(translations, key);
+      if (value === undefined) {
         if (import.meta.env.DEV) {
           console.warn(`[i18n] Missing translation: "${key}"`);
         }
         return key;
       }
 
-      // 4) Placeholder'ları değiştir
-      return interpolate(fallbackValue, params);
+      return interpolate(value, params);
     },
-    [lang]
+    [translations],
   );
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, toggleLang, t }}>
+    <LanguageContext.Provider value={{ lang, setLang, toggleLang, t, ready }}>
       {children}
     </LanguageContext.Provider>
   );
@@ -82,7 +133,7 @@ export function LanguageProvider({ children }) {
 export function useLanguage() {
   const ctx = useContext(LanguageContext);
   if (!ctx) {
-    throw new Error('useLanguage must be used within LanguageProvider');
+    throw new Error("useLanguage must be used within LanguageProvider");
   }
   return ctx;
 }

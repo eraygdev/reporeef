@@ -1,19 +1,23 @@
 // ═══════════════════════════════════════════════════════════
-// TRANSLATIONS — Merkezi çeviri index'i
+// TRANSLATIONS — Lazy yükleyici
 // ═══════════════════════════════════════════════════════════
 //
-// Yapı:
-//   translations[lang][namespace][key] = 'metin'
+// Her dil ayrı bir chunk. Aktif dil yüklenir, diğeri indirilmez.
+// Kullanıcı TR ise sadece tr.js iner (~25 KB). EN ise en.js.
 //
-// Diller ayrı dosyalarda:
-//   en.js → İngilizce
-//   tr.js → Türkçe
+// Kullanım:
+//   const t = await loadTranslation('tr');
 // ═══════════════════════════════════════════════════════════
 
-import { en } from "./en";
-import { tr } from "./tr";
+const loaders = {
+  en: () => import("./en.js").then((m) => m.en),
+  tr: () => import("./tr.js").then((m) => m.tr),
+};
 
-export const translations = { en, tr };
+export function loadTranslation(lang) {
+  const loader = loaders[lang] || loaders.en;
+  return loader();
+}
 
 // ═══════════════════════════════════════════════════════════
 // YARDIMCI FONKSİYON: objeden key ile değer okuma

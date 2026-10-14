@@ -175,7 +175,7 @@ function AppContent() {
         </Suspense>
       </Layout>
 
-      {/* Cookie banner her route'ta görünür — onboarding bile olsa */}
+      {/* Cookie banner her route'ta görünür */}
       <CookieBanner />
     </>
   );
