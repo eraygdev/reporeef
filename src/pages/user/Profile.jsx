@@ -217,48 +217,61 @@ export default function UserProfile() {
           />
 
           <div className="relative p-6 sm:p-8">
-            {/* ÜST SATIR — Avatar + İsim + Bio + Ayarlar */}
-            <div className="flex flex-col sm:flex-row sm:items-start gap-5 sm:gap-6">
-              {/* Avatar */}
-              <Avatar
-                src={profile.avatar_url}
-                username={profile.username}
-                size="2xl"
-                rounded="card"
-                className="shadow-lg"
-              />
+            {/* Layout:
+                MOBİL:  avatar üstte, isim/bio altında, settings avatarın sağ üst hizasında
+                DESKTOP: avatar solda, isim/bio ortada, settings en sağda
+                Settings sadece bir kez render edilir — görünürlük breakpoint ile kontrol edilir. */}
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+              {/* Avatar + (mobilde) settings yan yana */}
+              <div className="flex items-start justify-between gap-4 sm:block">
+                <Avatar
+                  src={profile.avatar_url}
+                  username={profile.username}
+                  size="2xl"
+                  rounded="card"
+                  className="shadow-lg"
+                />
 
-              {/* İsim + Bio */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-3 flex-wrap">
-                  <div className="min-w-0">
-                    <h1 className="text-h3 font-extrabold text-text tracking-tight mb-1">
-                      {isSelf ? t("profile.title_self") : profile.username}
-                    </h1>
-                    <p className="text-body-sm text-text-muted font-mono">
-                      @{profile.username}
+                {isSelf && (
+                  <Link
+                    to="/settings"
+                    className="sm:hidden inline-flex items-center gap-2 px-3.5 py-2 text-caption font-semibold text-text-muted bg-bg/60 border border-accent/20 rounded-button hover:border-accent hover:text-text transition-all font-mono shrink-0"
+                  >
+                    <Icon.Settings className="w-3.5 h-3.5" />
+                    {t("profile.settings")}
+                  </Link>
+                )}
+              </div>
+
+              {/* İsim + Bio + (desktop) settings */}
+              <div className="flex-1 min-w-0 flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-h3 font-extrabold text-text tracking-tight mb-1 truncate">
+                    {profile.username}
+                  </h1>
+                  <p className="text-body-sm text-text-muted font-mono truncate">
+                    @{profile.github_username || profile.username}
+                  </p>
+
+                  {profile.bio ? (
+                    <p className="text-body-sm text-text-muted leading-relaxed mt-3 max-w-2xl">
+                      {profile.bio}
                     </p>
-                  </div>
-
-                  {isSelf && (
-                    <Link
-                      to="/settings"
-                      className="inline-flex items-center gap-2 px-3.5 py-2 text-caption font-semibold text-text-muted bg-bg/60 border border-accent/20 rounded-button hover:border-accent hover:text-text transition-all font-mono shrink-0"
-                    >
-                      <Icon.Settings className="w-3.5 h-3.5" />
-                      {t("profile.settings")}
-                    </Link>
+                  ) : (
+                    <p className="text-body-sm text-text-muted/60 italic font-mono mt-3">
+                      {t("profile.empty_bio")}
+                    </p>
                   )}
                 </div>
 
-                {profile.bio ? (
-                  <p className="text-body-sm text-text-muted leading-relaxed mt-3 max-w-2xl">
-                    {profile.bio}
-                  </p>
-                ) : (
-                  <p className="text-body-sm text-text-muted/60 italic font-mono mt-3">
-                    {t("profile.empty_bio")}
-                  </p>
+                {isSelf && (
+                  <Link
+                    to="/settings"
+                    className="hidden sm:inline-flex items-center gap-2 px-3.5 py-2 text-caption font-semibold text-text-muted bg-bg/60 border border-accent/20 rounded-button hover:border-accent hover:text-text transition-all font-mono shrink-0"
+                  >
+                    <Icon.Settings className="w-3.5 h-3.5" />
+                    {t("profile.settings")}
+                  </Link>
                 )}
               </div>
             </div>
