@@ -7,7 +7,6 @@ import {
   Navigate,
   useNavigate,
 } from "react-router-dom";
-import SamsungDarkWarning from "./components/ui/SamsungDarkWarning";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ConfigProvider } from "./context/ConfigContext";
 import { LanguageProvider } from "./i18n/LanguageContext";
@@ -195,7 +194,6 @@ export default function App() {
           <AuthProvider>
             <ToastProvider>
               <ScrollToTop />
-              <SamsungDarkWarning />
               <AppContent />
             </ToastProvider>
           </AuthProvider>
