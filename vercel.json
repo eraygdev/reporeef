@@ -5,8 +5,8 @@
       "destination": "https://api.reporeef.com/sitemap.xml"
     },
     {
-      "source": "/((?!sitemap\\.xml|robots\\.txt|favicon\\.svg|og-image\\.png).*)",
-      "destination": "/index.html"
+      "source": "/api/(.*)",
+      "destination": "https://api.reporeef.com/api/$1"
     }
   ],
   "headers": [

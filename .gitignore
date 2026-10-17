@@ -32,3 +32,5 @@ dist-ssr
 # Export script ve çıktısı
 export_f.py
 frontend_export.md
+build
+dist
