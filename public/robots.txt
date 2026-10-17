@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Gizli alanlar (arama motorları taramasın)
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /create-project
+Disallow: /onboarding
+Disallow: /auth/
+Disallow: /api/
+
+# Sitemap konumu
+Sitemap: https://reporeef.com/sitemap.xml
