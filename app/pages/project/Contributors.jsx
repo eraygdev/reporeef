@@ -8,6 +8,7 @@ import NotFoundScreen from "../../components/ui/NotFoundScreen";
 import Avatar from "../../components/ui/Avatar";
 import PageBreadcrumb from "../../components/ui/PageBreadcrumb";
 import * as Icon from "../../components/ui/Icons";
+import RemoveContributorModal from "../../components/project/RemoveContributorModal";
 import { extractError } from "../../utils/errors";
 import { getLastSeenStatus, formatLastSeen } from "../../utils/format";
 
@@ -26,6 +27,9 @@ export default function ProjectContributors() {
 
   const [waInput, setWaInput] = useState("");
   const [waSaving, setWaSaving] = useState(false);
+  const [removeTarget, setRemoveTarget] = useState(null);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [removeSubmitting, setRemoveSubmitting] = useState(false);
 
   const isOwner =
     user &&
@@ -101,6 +105,44 @@ export default function ProjectContributors() {
       toast.error(t("errors.generic"));
     } finally {
       setWaSaving(false);
+    }
+  };
+
+  const handleRemoveContributor = async () => {
+    if (!removeTarget || removeSubmitting) return;
+    setRemoveSubmitting(true);
+
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(
+        `${API}/projects/${id}/contributors/${removeTarget.user_id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (!res.ok) {
+        const { message } = await extractError(res, t);
+        toast.error(message);
+        setRemoveSubmitting(false);
+        return;
+      }
+
+      setData((prev) => ({
+        ...prev,
+        contributors: prev.contributors.filter(
+          (c) => c.user_id !== removeTarget.user_id,
+        ),
+      }));
+
+      setIsRemoveModalOpen(false);
+      setRemoveTarget(null);
+      toast.success(t("remove_contributor.success"));
+    } catch {
+      toast.error(t("errors.generic"));
+    } finally {
+      setRemoveSubmitting(false);
     }
   };
 
@@ -220,7 +262,7 @@ export default function ProjectContributors() {
                 <li key={c.user_id}>
                   <Link
                     to={`/profile/${c.username}`}
-                    className="flex items-center gap-3 px-5 py-3 hover:bg-bg/40 transition-colors"
+                    className="flex items-center gap-3 px-5 py-3 hover:bg-bg/40 transition-colors group relative"
                   >
                     <div className="relative shrink-0">
                       <Avatar
@@ -228,16 +270,10 @@ export default function ProjectContributors() {
                         username={c.username}
                         size="md"
                       />
-                      {status !== "none" && status !== "older" && (
+                      {status === "today" && (
                         <span
-                          className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-pill border-2 border-surface ${
-                            status === "online"
-                              ? "bg-green-500"
-                              : status === "today"
-                                ? "bg-yellow-500"
-                                : "bg-white/60"
-                          }`}
-                          aria-label={t(`contributors.status.${status}`)}
+                          className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-pill border-2 border-surface bg-orange-400"
+                          aria-label={t("contributors.status.today")}
                         />
                       )}
                     </div>
@@ -263,6 +299,24 @@ export default function ProjectContributors() {
                     <span className="text-mono-sm text-text-muted/70 font-mono shrink-0">
                       {formatLastSeen(c.last_seen_at, t)}
                     </span>
+
+                    {isOwner && c.role !== "owner" && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setRemoveTarget(c);
+                          setIsRemoveModalOpen(true);
+                        }}
+                        className="ml-2 p-1.5 rounded-button text-text-muted hover:text-red-400 hover:bg-red-400/10 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 cursor-pointer shrink-0"
+                        aria-label={t("remove_contributor.aria", {
+                          username: c.username,
+                        })}
+                      >
+                        <Icon.Close className="w-4 h-4" />
+                      </button>
+                    )}
                   </Link>
                 </li>
               );
@@ -270,6 +324,18 @@ export default function ProjectContributors() {
           </ul>
         </div>
       </div>
+
+      <RemoveContributorModal
+        isOpen={isRemoveModalOpen}
+        onClose={() => {
+          if (removeSubmitting) return;
+          setIsRemoveModalOpen(false);
+          setRemoveTarget(null);
+        }}
+        onConfirm={handleRemoveContributor}
+        username={removeTarget?.username || ""}
+        submitting={removeSubmitting}
+      />
     </div>
   );
 }

@@ -487,14 +487,12 @@ export const tr = {
       owner: "sahip",
     },
     status: {
-      online: "çevrimiçi",
       today: "bugün",
       yesterday: "dün",
       older: "daha eski",
       none: "hiç",
     },
     last_seen: {
-      online: "çevrimiçi",
       today: "bugün",
       yesterday: "dün",
       days_ago: "{{days}}g önce",
@@ -675,6 +673,7 @@ export const tr = {
     cancel: "Vazgeç",
     confirm: "Çıkar",
     submitting: "Çıkarılıyor...",
+    success: "Katkıcı çıkarıldı",
   },
 
   // ─── SCROLL HINT ───

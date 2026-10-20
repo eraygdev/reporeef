@@ -45,6 +45,11 @@ type Pages = {
       "id": string;
     };
   };
+  "/project/:id/contributors": {
+    params: {
+      "id": string;
+    };
+  };
   "/project/:id": {
     params: {
       "id": string;
@@ -84,7 +89,7 @@ type Pages = {
 type RouteFiles = {
   "root.jsx": {
     id: "root";
-    page: "/" | "/profile/:username" | "/settings" | "/settings/account" | "/settings/appearance" | "/settings/notifications" | "/settings/danger" | "/dashboard" | "/create-project" | "/project/:id/edit" | "/project/:id" | "/login" | "/register" | "/auth/callback" | "/onboarding" | "/about" | "/privacy" | "/terms" | "/cookies" | "/*";
+    page: "/" | "/profile/:username" | "/settings" | "/settings/account" | "/settings/appearance" | "/settings/notifications" | "/settings/danger" | "/dashboard" | "/create-project" | "/project/:id/edit" | "/project/:id/contributors" | "/project/:id" | "/login" | "/register" | "/auth/callback" | "/onboarding" | "/about" | "/privacy" | "/terms" | "/cookies" | "/*";
   };
   "pages/project/Home.jsx": {
     id: "pages/project/Home";
@@ -129,6 +134,10 @@ type RouteFiles = {
   "pages/project/Edit.jsx": {
     id: "pages/project/Edit";
     page: "/project/:id/edit";
+  };
+  "pages/project/Contributors.jsx": {
+    id: "pages/project/Contributors";
+    page: "/project/:id/contributors";
   };
   "pages/project/Details.jsx": {
     id: "pages/project/Details";
@@ -185,6 +194,7 @@ type RouteModules = {
   "pages/user/Dashboard": typeof import("./app/pages/user/Dashboard.jsx");
   "pages/project/Create": typeof import("./app/pages/project/Create.jsx");
   "pages/project/Edit": typeof import("./app/pages/project/Edit.jsx");
+  "pages/project/Contributors": typeof import("./app/pages/project/Contributors.jsx");
   "pages/project/Details": typeof import("./app/pages/project/Details.jsx");
   "pages/auth/Login": typeof import("./app/pages/auth/Login.jsx");
   "pages/auth/Register": typeof import("./app/pages/auth/Register.jsx");

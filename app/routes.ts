@@ -16,6 +16,7 @@ export default [
   route("dashboard", "pages/user/Dashboard.jsx"),
   route("create-project", "pages/project/Create.jsx"),
   route("project/:id/edit", "pages/project/Edit.jsx"),
+  route("project/:id/contributors", "pages/project/Contributors.jsx"),
   route("project/:id", "pages/project/Details.jsx"),
 
   route("login", "pages/auth/Login.jsx"),

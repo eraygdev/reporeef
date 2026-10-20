@@ -489,14 +489,12 @@ export const en = {
       owner: "owner",
     },
     status: {
-      online: "online",
       today: "today",
       yesterday: "yesterday",
       older: "older",
       none: "never",
     },
     last_seen: {
-      online: "online",
       today: "today",
       yesterday: "yesterday",
       days_ago: "{{days}}d ago",
@@ -676,6 +674,7 @@ export const en = {
     cancel: "Cancel",
     confirm: "Remove",
     submitting: "Removing...",
+    success: "Contributor removed",
   },
 
   // ─── SCROLL HINT ───

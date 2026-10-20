@@ -280,7 +280,7 @@ export default function UserProfile() {
             <div className="mt-5 mb-4 h-px bg-linear-to-r from-accent/15 via-accent/10 to-transparent" />
 
             {/* ALT SATIR — İstatistikler */}
-            <div className="flex items-center gap-5 sm:gap-10 flex-wrap -mb-1">
+            <div className="grid grid-cols-2 sm:flex sm:items-center gap-x-5 gap-y-4 sm:gap-10 -mb-1">
               {/* Proje */}
               <div className="flex items-center gap-3">
                 <Icon.Folder className="w-4 h-4 text-text-muted shrink-0" />
@@ -294,7 +294,7 @@ export default function UserProfile() {
                 </div>
               </div>
 
-              <div className="w-px h-5 bg-accent/15" />
+              <div className="hidden sm:block w-px h-5 bg-accent/15" />
 
               {/* Yıldız */}
               <div className="flex items-center gap-3">
@@ -309,10 +309,10 @@ export default function UserProfile() {
                 </div>
               </div>
 
-              <div className="w-px h-5 bg-accent/15" />
+              <div className="hidden sm:block w-px h-5 bg-accent/15" />
 
               {/* Katkıcı */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 col-span-2 sm:col-span-1">
                 <Icon.Users className="w-4 h-4 text-text-muted shrink-0" />
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-h5 font-bold text-text font-mono tabular-nums leading-none">
