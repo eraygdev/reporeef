@@ -195,6 +195,7 @@ export const tr = {
     project: "proje:{{id}}",
     new_project: "yeni proje",
     edit: "düzenle",
+    contributors: "katkıcılar",
     about: "hakkımızda",
     privacy: "gizlilik",
     terms: "şartlar",
@@ -441,6 +442,7 @@ export const tr = {
     section: {
       links: "/bağlantılar",
       contributors: "/katkıcılar ({{count}} / {{max}})",
+      contributors_view_all: "/tümü",
       about: "/proje hakkında",
       info: "/proje bilgileri",
       share: "/paylaş",
@@ -468,6 +470,45 @@ export const tr = {
       twitter: "twitter",
       copy_success: "Link kopyalandı!",
       copy_failed: "Link kopyalanamadı",
+    },
+  },
+
+  // ─── CONTRIBUTORS ───
+  contributors: {
+    loading: "Katkıcılar yükleniyor...",
+    title: "Katkıcılar",
+    subtitle:
+      "Bu projeyi birlikte geliştirenler. Fikir paylaş, WhatsApp'ta koordine ol.",
+    list_title: "/katkıcılar ({{count}})",
+    not_found_eyebrow: "katkıcılar · bulunamadı",
+    not_found_title: "proje bulunamadı",
+    not_found_desc: "Aradığın proje silinmiş veya taşınmış olabilir.",
+    role: {
+      owner: "sahip",
+    },
+    status: {
+      online: "çevrimiçi",
+      today: "bugün",
+      yesterday: "dün",
+      older: "daha eski",
+      none: "hiç",
+    },
+    last_seen: {
+      online: "çevrimiçi",
+      today: "bugün",
+      yesterday: "dün",
+      days_ago: "{{days}}g önce",
+      never: "hiç",
+    },
+    whatsapp: {
+      title: "WhatsApp grubu",
+      desc: "Ekip ile WhatsApp üzerinden koordine ol.",
+      placeholder: "https://chat.whatsapp.com/...",
+      save: "kaydet",
+      saving: "kaydediliyor...",
+      saved: "WhatsApp linki kaydedildi",
+      join: "WhatsApp grubuna katıl",
+      empty: "Henüz WhatsApp grubu linki eklenmemiş.",
     },
   },
 
@@ -705,6 +746,11 @@ export const tr = {
     not_a_contributor: "Bu projede katkıcı değilsin",
     invalid_request_id: "Geçersiz başvuru kimliği",
     request_not_found: "Başvuru bulunamadı",
+
+    // katkıcılar sayfası
+    invalid_whatsapp_url:
+      "Sadece chat.whatsapp.com veya wa.me linkleri kabul edilir",
+    whatsapp_url_too_long: "WhatsApp linki çok uzun (en fazla 200 karakter)",
 
     // yetki
     forbidden: "Bu işlem için yetkin yok",

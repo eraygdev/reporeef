@@ -22,3 +22,51 @@ export function formatCount(num) {
   const b = n / 1_000_000_000;
   return (b < 10 ? b.toFixed(1).replace(/\.0$/, "") : Math.floor(b)) + "B";
 }
+
+// last_seen_at → durum: 'online' | 'today' | 'yesterday' | 'older' | 'none'
+// Online eşiği 10 dk — backend throttle 5 dk olduğu için tutarlı.
+export function getLastSeenStatus(isoString) {
+  if (!isoString) return "none";
+
+  const last = new Date(isoString).getTime();
+  const now = Date.now();
+  const diffMin = (now - last) / 60000;
+
+  if (diffMin < 10) return "online";
+
+  const nowDate = new Date(now);
+  const lastDate = new Date(last);
+
+  const sameDay =
+    nowDate.getFullYear() === lastDate.getFullYear() &&
+    nowDate.getMonth() === lastDate.getMonth() &&
+    nowDate.getDate() === lastDate.getDate();
+
+  if (sameDay) return "today";
+
+  const yesterday = new Date(now - 86400000);
+  if (
+    yesterday.getFullYear() === lastDate.getFullYear() &&
+    yesterday.getMonth() === lastDate.getMonth() &&
+    yesterday.getDate() === lastDate.getDate()
+  ) {
+    return "yesterday";
+  }
+
+  return "older";
+}
+
+// Gün seviyesinde insan-okunur metin.
+export function formatLastSeen(isoString, t) {
+  const status = getLastSeenStatus(isoString);
+
+  if (status === "none") return t("contributors.last_seen.never");
+  if (status === "online") return t("contributors.last_seen.online");
+  if (status === "today") return t("contributors.last_seen.today");
+  if (status === "yesterday") return t("contributors.last_seen.yesterday");
+
+  const days = Math.floor(
+    (Date.now() - new Date(isoString).getTime()) / 86400000,
+  );
+  return t("contributors.last_seen.days_ago", { days });
+}

@@ -196,6 +196,7 @@ export const en = {
     project: "project:{{id}}",
     new_project: "new project",
     edit: "edit",
+    contributors: "contributors",
     about: "about us",
     privacy: "privacy",
     terms: "terms",
@@ -443,6 +444,7 @@ export const en = {
     section: {
       links: "/links",
       contributors: "/contributors ({{count}} / {{max}})",
+      contributors_view_all: "/all",
       about: "/about this project",
       info: "/project info",
       share: "/share",
@@ -470,6 +472,45 @@ export const en = {
       twitter: "twitter",
       copy_success: "Link copied!",
       copy_failed: "Couldn't copy link",
+    },
+  },
+
+  // ─── CONTRIBUTORS ───
+  contributors: {
+    loading: "Loading contributors...",
+    title: "Contributors",
+    subtitle:
+      "People building this project together. Share ideas, coordinate on WhatsApp.",
+    list_title: "/contributors ({{count}})",
+    not_found_eyebrow: "contributors · not found",
+    not_found_title: "project not found",
+    not_found_desc: "The project you're looking for has been deleted or moved.",
+    role: {
+      owner: "owner",
+    },
+    status: {
+      online: "online",
+      today: "today",
+      yesterday: "yesterday",
+      older: "older",
+      none: "never",
+    },
+    last_seen: {
+      online: "online",
+      today: "today",
+      yesterday: "yesterday",
+      days_ago: "{{days}}d ago",
+      never: "never",
+    },
+    whatsapp: {
+      title: "WhatsApp group",
+      desc: "Coordinate with the team on WhatsApp.",
+      placeholder: "https://chat.whatsapp.com/...",
+      save: "save",
+      saving: "saving...",
+      saved: "WhatsApp link saved",
+      join: "Join WhatsApp group",
+      empty: "No WhatsApp group link yet.",
     },
   },
 
@@ -705,6 +746,10 @@ export const en = {
     not_a_contributor: "You're not a contributor to this project",
     invalid_request_id: "Invalid request ID",
     request_not_found: "Request not found",
+
+    // contributors page
+    invalid_whatsapp_url: "Only chat.whatsapp.com or wa.me links are allowed",
+    whatsapp_url_too_long: "WhatsApp link is too long (max 200 characters)",
 
     // permission
     forbidden: "You don't have permission for this action",

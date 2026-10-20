@@ -592,12 +592,23 @@ export default function ProjectDetail() {
             {project.contributorsList &&
               project.contributorsList.length > 0 && (
                 <div>
-                  <h2 className="text-caption font-bold text-text uppercase tracking-wider mb-3 font-mono">
-                    {t("details.section.contributors", {
-                      count: project.contributorsList.length,
-                      max: project.maxContributors,
-                    })}
-                  </h2>
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 className="text-caption font-bold text-text uppercase tracking-wider font-mono">
+                      {t("details.section.contributors", {
+                        count: project.contributorsList.length,
+                        max: project.maxContributors,
+                      })}
+                    </h2>
+                    {(isAuthor || joinStatus === "approved") && (
+                      <Link
+                        to={`/project/${project.id}/contributors`}
+                        className="text-caption text-text-muted hover:text-accent transition-colors font-mono inline-flex items-center gap-1"
+                      >
+                        {t("details.section.contributors_view_all")}
+                        <Icon.ArrowRight className="w-3 h-3" />
+                      </Link>
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {project.contributorsList.map((contributor) => (
                       <ContributorCard
