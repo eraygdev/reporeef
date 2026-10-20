@@ -450,6 +450,8 @@ export const en = {
     meta: {
       stars: "stars",
       contributors: "contributors",
+      created: "created",
+      updated: "updated",
     },
     cta: {
       your_project: "this project is yours · {{count}} stars",

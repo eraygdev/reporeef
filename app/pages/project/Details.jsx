@@ -75,7 +75,7 @@ export default function ProjectDetail() {
   }, [id]);
 
   useEffect(() => {
-    if (!user) {
+    if (!user?.user_id) {
       setJoinStatus("none");
       return;
     }
@@ -99,7 +99,7 @@ export default function ProjectDetail() {
     return () => {
       cancelled = true;
     };
-  }, [id, user]);
+  }, [id, user?.user_id]);
 
   const handleToggleStar = async () => {
     if (!user) {
@@ -650,6 +650,22 @@ export default function ProjectDetail() {
                       <span className="text-text-muted">
                         / {project.maxContributors}
                       </span>
+                    </dd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <dt className="text-text-muted font-mono">
+                      {t("details.meta.created")}
+                    </dt>
+                    <dd className="font-medium text-text font-mono tabular-nums">
+                      {formatDate(project.createdAt)}
+                    </dd>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <dt className="text-text-muted font-mono">
+                      {t("details.meta.updated")}
+                    </dt>
+                    <dd className="font-medium text-text font-mono tabular-nums">
+                      {formatDate(project.updatedAt || project.createdAt)}
                     </dd>
                   </div>
                 </dl>

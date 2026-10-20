@@ -448,6 +448,8 @@ export const tr = {
     meta: {
       stars: "yıldız",
       contributors: "katkıcı",
+      created: "oluşturma",
+      updated: "güncelleme",
     },
     cta: {
       your_project: "bu proje senin · {{count}} yıldız",

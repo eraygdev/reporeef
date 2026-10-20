@@ -10,6 +10,7 @@ import {
 } from "react-router";
 import { useState, useEffect, Suspense } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { useScale } from "./hooks/useScale";
 import { ConfigProvider } from "./context/ConfigContext";
 import { LanguageProvider } from "./i18n/LanguageContext";
 import Navbar from "./components/layout/Navbar";
@@ -139,6 +140,8 @@ export function Layout({ children }) {
 
 // Root Bileşeni (Provider'ları sarar)
 export default function App() {
+  useScale();
+
   return (
     <ConfigProvider>
       <LanguageProvider>
